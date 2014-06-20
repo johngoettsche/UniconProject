@@ -1,0 +1,129 @@
+%%This is a very basic article template.
+%%There is just one section and two subsections.
+
+\documentclass{article}
+
+%\usepackage{fullpage}
+%\usepackage{setspace}
+%\doublespacing
+
+%\usepackage{cite}
+
+\usepackage[pdftex]{graphicx}
+% declare the path(s) where your graphic files are
+\graphicspath{{./images/}}
+ % and their extensions so you won't have to specify these with
+ % every instance of \includegraphics
+ \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+%\usepackage{fancyhdr}
+
+\begin{document}
+
+\section{Pattern Appendix}
+
+\subsection{Pattern Variables}
+\textbf{variable} \\
+ signifies a static variable\\
+\noindent\rule{12cm}{0.4pt}
+ 
+\noindent\textbf{`variable`} \\
+signifies an unevaluated variable in a pattern\\
+
+\subsection{Pattern Operators}
+\noindent\textbf{pattern1 \&\&	pattern2} \hfill \textbf{pattern concatenation}\\
+pattern concatenation operator produces a new pattern containing the left operand followed the right operand.\\
+\noindent\rule{12cm}{0.4pt}
+
+\noindent\textbf{pattern1 .$\mid$ pattern2} \hfill \textbf{pattern alteration}\\
+pattern alteration operator produces a pattern containing either the left operand or the right operand.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{substring -$>$ variable} \hfill\textbf{conditional assignment}\\
+assigns the substring on the left to the variable on the right if the pattern match is successful.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{result \$\$ variable} \hfill\textbf{immediate assignment}\\
+assigns the immediate result on the left to a variable on the right within a pattern.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{.\$ variable} \hfill\textbf{cursor position assignment}\\
+assigns the cursor position of the string to a variable on the right within a pattern.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{string ?? variable} \hfill\textbf{comparison operator}\\
+compares the string on the left to see if there are any matches of the pattern on the right.\\
+
+\subsection{Pattern Built-In Functions}
+\noindent\textbf{PAny(s)} \hfill\textbf{match any}\\
+matches any of the subject characters in s.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PArb()} \hfill\textbf{arbitrary pattern}\\
+matches any arbitrary pattern of any length.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PArbno(p)} \hfill\textbf{repetitive arbitrary pattern}\\
+matches repetitive sequences of p in the subject string.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PBal()} \hfill\textbf{balanced parentheses}\\
+matches the shortest non-null string which parentheses are balanced.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PBreak(s)} \hfill\textbf{pattern break}\\
+matches any characters up to but not including any of the subject characters in s.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PBreakx(s)} \hfill\textbf{extended pattern break}\\
+matches any characters up to any of the subject characters in s, and will look beyond the break position for a possible larger match.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PCancel()} \hfill\textbf{pattern cancel}\\
+causes an immediate failure of the entire pattern match.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PFail()} \hfill\textbf{pattern failure}\\
+signals the failure of the current portion of the pattern match.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PFence()} \hfill\textbf{pattern fence}\\
+signals a failure in the current portion of the pattern match if it is trying to backing up to try other alternatives.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PLen(I)} \hfill\textbf{match fixed-length string}\\
+matches a string of a length of I characters.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PNotAny(s)} \hfill\textbf{match not any}\\
+matches any of the subject characters that are not in s.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PPos(I)} \hfill\textbf{cursor position}\\
+sets the cursor position of a string in a pattern measured from the left to the right. the first position precedes the first character in the string and has a value of 1.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PRest()} \hfill\textbf{rest of pattern}\\
+matches the remainder of the subject string.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PRpos(I)} \hfill\textbf{reverse cursor position}\\
+sets the cursor position of a string in a pattern measured from the right to the left. the first position follows the last character in the string and has a value of 0.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PRtab(I)} \hfill\textbf{pattern reverse tab}\\
+matches any characters from the current position up to the specified position to the right.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PSpan(s)} \hfill\textbf{pattern span}\\
+matches one or more subject characters for the set in s.  It must match at least one character.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PSucceed()} \hfill\textbf{pattern succeed}\\
+(may be a frivolous function)\\
+signals a success of the current portion of the pattern match.\\
+\noindent\rule{12cm}{0.1pt}
+
+\noindent\textbf{PTab(I)} \hfill\textbf{pattern tab}\\
+matches any characters from the current position up to the specified position to the right.
+
+\end{document}
