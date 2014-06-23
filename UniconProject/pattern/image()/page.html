@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Image()</title>
+</head><body>added the pattern type to the image() built-in funciton.<br/>
+<br/>
+<span style="color: #ff0000">unicon-code\unicon\src\runtime\rmisc.r</span><br/>
+<span style="color: #0000ff">int getimage(dp1,dp2)</span><br/>
+<br/>
+l1586&#09;&#09;register union block *ep;<br/>
+<br/>
+l1795&#09;&#09;#ifdef PatternType&#09;&#09;<ul><li style="list-style-type: none">&#09;&#09;&#09;pattern: {</li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09;/*</li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09; * Produce:</li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09; * &nbsp;"pattern_m(n)"</li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09; * where n is the current size of the pattern.</li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09; */</li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09;bp = BlkLoc(*dp1);</li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09;ep = (long)Blk(bp,Pattern)-&gt;pe;</li>
+<li style="list-style-type: none"></li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09;sprintf(sbuf, "pattern_%ld(%ld)", (long)Blk(bp,Pattern)-&gt;id, </li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09;&#09;(long)Blk(ep,Pelem)-&gt;index);</li>
+</ul>
+&#09;&#09;&#09;&#09;<ul><li style="list-style-type: none">&#09;&#09;&#09;&#09;len = strlen(sbuf);</li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09;Protect(t = alcstr(sbuf, len), return RunError);</li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09;StrLoc(*dp2) = t;&#09;</li>
+<li style="list-style-type: none">&#09;&#09;&#09;&#09;StrLen(*dp2) = len;</li>
+</ul>
+&#09;&#09;&#09;&#09;&#09;}<br/>
+&#09;&#09;&#09;#endif &nbsp;/* Pattern Type */<br/>
+<br/>
+<br/>
+<span style="color: #00007f">NOTE:<br/>
+runs properly, but does not count concatonation.</span></body></html>
