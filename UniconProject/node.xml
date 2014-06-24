@@ -14,9 +14,11 @@
     </dict>
   </array>
   <key>expanded</key><true/>
-  <key>title</key><string>UniconProject</string>
   <key>nodeid</key><string>253a4890-d945-405f-bc01-84ac8c6d3b8c</string>
   <key>modified_time</key><integer>1403546271</integer>
+  <key>content_type</key><string>application/x-notebook-dir</string>
+  <key>created_time</key><integer>1403546271</integer>
+  <key>title</key><string>UniconProject</string>
   <key>column_widths</key><dict>
     <key>created_time</key><integer>150</integer>
     <key>modified_time</key><integer>1409</integer>
@@ -115,8 +117,6 @@
     </dict>
   </array>
   <key>version</key><integer>6</integer>
-  <key>content_type</key><string>application/x-notebook-dir</string>
-  <key>created_time</key><integer>1403546271</integer>
   <key>order</key><integer>0</integer>
 </dict>
 </node>
