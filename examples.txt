@@ -1,0 +1,352 @@
+ALTERNATION
+(or)
+
+SNOBOL4:
+Var = A | B
+
+Unicon Patterns:
+Var := A .| B
+
+Unicon Alternation:
+Var := A | B
+
+Unicon Repeated Alternation:
+Var := |A
+
+Recommendations:  If it is possible to use | for alternation, then it would be preferable to do so for consistency sake.  This brings up the issue of how it is implemented as patterns don't evaluate until the ?? operator is called, but in string scanning it is evaluated immediately.
+--------------------------------
+CONCATENATION
+(and)
+
+SNOBOL4:
+Var = A B
+
+Unicon Patterns:
+Var := A && B
+
+Unicon Strings:
+Var := A || B
+
+Unicon Lists:
+Var := A ||| B
+
+Recommendations:  Implicit concatenation may be nice, but are there reduce-reduce issues with the grammar?  If it is possible to use || for concatenation, then it would be preferable to do so for consistency sake.  This brings up the issue of how it is implemented as patterns don't evaluate until the ?? operator is called, but in string scanning it is evaluated immediately.
+
+--------------------------------
+MATCHING/SCANNING PROCESS
+
+SNOBOL4:
+'Reads'  ('B' | 'R') ('e' | 'ea') ('d' | 'ds')
+
+Unicon Patterns:
+"Reads" ?? ("B" .| "R") && ("e" .| "ea") && ("d" .| "ds")
+
+ R e a d s		-> "B"	   "e"	   "d"
+^					   "R"	   "ea"	   "ds"
+
+ R e a d s		   "B"	   "e"	   "d"
+^					-> "R"	   "ea"	   "ds"
+
+ R e a d s		   "B"	-> "e"	   "d"
+  ^				---"R"-	   "ea"	   "ds"
+  
+ R e a d s		   "B"	---"e"-	-> "d"
+    ^ 			---"R"-	   "ea"	   "ds"		
+	 
+ R e a d s		   "B"	---"e"-	   "d"
+    ^ 			---"R"-	   "ea"	-> "ds"
+	 
+ R e a d s		   "B"		"e" 		"d"
+    ^ 			---"R"-	-> "ea"	   "ds"
+
+ R e a d s		   "B"	   "e" 	-> "d"
+      ^			---"R"-	---"ea"-	   "ds"
+		
+ R e a d s		   "B"	   "e" 	-> "d"
+        ^		---"R"-	---"ea"-	   "ds"
+		  
+ R e a d s		   "B"	   "e" 	---"d"-
+        *		---"R"-	---"ea"-	   "ds"
+		  
+MATCHES: Read
+The left operand of the .| operator is checked first, therefore, this pattern will not match reads, as it succeeds when it checks the "d".  It would have to fail on checking "d" to move oo to checking "ds".  In order to have the pattern succeed on both "d" or "ds", "ds" would have to be the left operand, as "d" is a substring of "ds".
+
+--------------------------------
+VARIABLE ASSIGNMENT
+
+SNOBOL4:
+line = 'Reads'
+pattern = ('B' | 'R') ('e' | 'ea') ('d' | 'ds')
+line  pattern
+
+Unicon:
+line := "Reads"
+pattern := ("B" .| "R") && ("e" .| "ea") && ("d" .| "ds")
+line ?? pattern
+
+MATCHES: Read
+
+Recommendations:  := is consistent. 
+--------------------------------
+CONDITIONAL ASSIGNMENT
+
+SNOBOL4:
+pattern = ('B' | 'R') . Var
+
+Unicon:
+pattern := ("B" .| "R") -> Var
+
+Result:
+Var = B or R if overall pattern is successful
+
+Recommendations:  I find -> to graphically illiterates its purpose while the . to be a bit confusing. 
+
+--------------------------------
+IMMEDIATE ASSIGNMENT
+
+SNOBOL4:
+pattern = ('B' | 'R') $ Var
+
+Unicon:
+pattern := ("B" .| "R") $$ Var
+
+Result:
+Var = B or R when matched even if overall pattern fails
+
+Recommendations:  I find $$ graphically not consistent with the other assignment operator, how about $> for immediate assignment and .> for cursor or &pos assignment?
+
+--------------------------------
+REPLACEMENT STATEMENT
+
+SNOBOL4:
+word = 'GIRD'
+word  'I' = 'OU'
+
+Unicon:
+word := "GIRD"
+word ?? "I" := "OU"
+
+result:
+word = GOURD
+
+Recommendations:  This actually works, but I am not sure why.
+
+--------------------------------
+LEN(n)/PLen(n)
+
+SNOBOL4:
+line = '1966 AUG. 09 John'
+dateOfBirth = LEN(4) . YR ' ' LEN(4) . MO ' ' LEN(2) . DAY
+line  dateOfBirth
+
+Unicon Patterns:
+line := "1966 AUG. 09 John"
+dateOfBirth := PLen(4) $$ YR && " " && PLen(4) $$ MO && " " && PLen(2) $$ DAY 
+line ?? dateOfBirth
+
+Unicon Strings:
+line := "1966 AUG. 09 John"
+line ? {
+	YR := move(4)
+	move(1)
+	MO := move(4)
+	move(1)
+	DAY := move(2)
+}
+
+result:
+YR = 1966
+MO = AUG.
+DAY = 09
+
+Recommendations:  Len() or len() do not appear to be used, so would it make more sense to use one of those?
+
+--------------------------------
+SPAN()/PSpan()
+
+SNOBOL4:
+line = "1966 AUG. 09 John"
+line  SPAN('0123456789') . year
+
+Unicon Patterns:
+line := "1966 AUG. 09 John"
+line ?? PSpan(&digits) -> year
+
+Unicon Strings:
+line := "1966 AUG. 09 John"
+line ? year := tab(many(&digits))
+
+result:
+year = 1966
+
+Recommendations:  Span() or span() do not appear to be used, so would it make more sense to use one of those?
+
+--------------------------------
+BREAK()/PBreak()
+
+SNOBOL4:
+line = "1966 AUG. 09 John"
+line  BREAK(' ') . year
+
+Unicon Patterns:
+line := "1966 AUG. 09 John"
+line ?? PBreak(' ') -> year
+
+Unicon Strings:
+line := "1966 AUG. 09 John"
+line ? year := tab(upto(' '))
+
+result:
+year = 1966
+
+Recommendations:  break is already used, but Break is not, so should we use Break() instead of PBreak()?  If we do, for consistency sake we might want to start the pattern built in functions with a capital letter.
+
+--------------------------------
+ANY()/PAny()
+
+SNOBOL4:
+vowels = ANY('aeiou')
+line = 'def'
+line  vowels . result
+
+Unicon Patterns:
+vowels := PAny('aeiou')
+line := "def"
+line ?? vowels -> result
+
+Unicon Strings:
+vowels := 'aeiou'
+line := "def"
+line ? {
+	tab(upto(vowels))
+	result := move(1)
+}
+result:
+result = e
+
+Recommendations:  any is already used, but Any is not, so should we use Any() instead of PBreak()?  If we do, for consistency sake we might want to start the pattern built in functions with a capital letter.
+
+--------------------------------
+NOTANY()/PNotAny()
+
+SNOBOL4:
+cons = NOTANY('aeiou')
+line = 'abcdef'
+line  cons . result
+
+Unicon Patterns:
+cons := PNotAny('aeiou')
+line := "abcdef"
+line ?? cons -> result
+
+Unicon Strings:
+vowels := 'aeiou'
+cons := &letters -- vowels
+line := "abcdef"
+line ? {
+	tab(upto(cons))
+	result := move(1)
+}
+result:
+result = b
+
+Recommendations:  NotAny() or notany() do not appear to be used, so would it make more sense to use one of those?
+--------------------------------
+TAB()/PTab()
+
+SNOBOL4:
+'SNOBOL4'  LEN(2) TAB(6) . result
+
+Unicon Patterns:
+"SNOBOL4" ?? PLen(2) && PTab(6) -> result
+
+Unicon Strings:
+"SNOBOL4" ? {
+	move(2)
+	result := tab(6)
+}
+
+result:
+result = OBO
+
+Recommendations:  pattern matching cursor position and string scanning &pos are similar but not necessarily consistent.  It would make sense to use the string scanning &pos if that is possible.  If not, then the Tab() could use negative index numbers instead of positive index numbers for RTab().  It would be nice to have these be consistent.
+
+--------------------------------
+RTAB()/PRtab()
+
+SNOBOL4:
+'SNOBOL4'  LEN(2) RTAB(1) . result
+
+Unicon Patterns:
+"SNOBOL4" ?? PLen(2) && PRtab(1) -> result
+
+Unicon Strings:
+"SNOBOL4" ? {
+	move(2)
+	result := tab(-1)
+}
+
+result:
+result = OBOL
+
+Recommendations:  pattern matching cursor position and string scanning &pos are similar but not necessarily consistent.  It would make sense to use the string scanning &pos if that is possible.  If not, then the Tab() could use negative index numbers instead of positive index numbers for RTab().  It would be nice to have these be consistent.
+
+--------------------------------
+REM()/PRest()
+
+SNOBOL4:
+'SNOBOL4'  LEN(2) REM . result
+
+Unicon Patterns:
+"SNOBOL4" ?? PLen(2) && PRest() -> result
+
+Unicon Strings:
+"SNOBOL4" ? {
+	move(2)
+	result := tab(0)
+}
+
+result:
+result = OBOL4
+
+Recommendations:  Rest() or rest() do not appear to be used, so would it make more sense to use one of those?
+
+--------------------------------
+POS()/PPos()
+
+SNOBOL4:
+'SNOBOL4'  POS(2) REM . result
+
+Unicon Patterns:
+"SNOBOL4" ?? PPos(2) && PRest() -> result
+
+Unicon Strings:
+"SNOBOL4" ? {
+	&pos := 2
+	result := tab(0)
+}
+
+result:
+result = NOBOL4
+
+Recommendations:  pattern matching cursor position and string scanning &pos are similar but not necessarily consistent.  It would make sense to use the string scanning &pos if that is possible.  If not, then the Pos() could use negative index numbers instead of positive index numbers for Rpos().  It would be nice to have these be consistent.
+
+--------------------------------
+RPOS()/PRpos()
+
+SNOBOL4:
+'SNOBOL4'  RPOS(4) REM . result
+
+Unicon Patterns:
+"SNOBOL4" ?? PRpos(4) && PRest() -> result
+
+Unicon Strings:
+"SNOBOL4" ? {
+	&pos := -4
+	result := tab(0)
+}
+
+result:
+result = BOL4
+
+Recommendations:  pattern matching cursor position and string scanning &pos are similar but not necessarily consistent.  It would make sense to use the string scanning &pos if that is possible.  If not, then the Pos() could use negative index numbers instead of positive index numbers for Rpos().  It would be nice to have these be consistent.
