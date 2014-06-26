@@ -1,0 +1,57 @@
+fsys.r: In function 'Zreads':
+fsys.r:1610:17: warning: passing argument 2 of 'fstat' from incompatible pointer type
+   if ((kk = fstat(fd, &statbuf)) == -1) fail;
+                 ^
+In file included from c:\Users\John\unicon-code\unicon\bin\..\src\h\../h/sys.h:92:0,
+                 from c:\Users\John\unicon-code\unicon\bin\..\src\h\rt.h:10,
+                 from xfsys.c:7:
+c:/Program Files (x86)/mingw-w64/i686-4.9.0-posix-dwarf-rt_v3-rev2/mingw32/i686-w64-mingw32/include/sys/stat.h:171:2: note: expected 'struct stat *' but argument is of type 'struct _stat64i32 *'
+  fstat(int _Desc,struct stat *_Stat) {
+  ^
+fsys.r:1618:17: warning: passing argument 2 of 'fstat' from incompatible pointer type
+   if ((kk = fstat(fd, &statbuf)) == -1) fail;
+                 ^
+In file included from c:\Users\John\unicon-code\unicon\bin\..\src\h\../h/sys.h:92:0,
+                 from c:\Users\John\unicon-code\unicon\bin\..\src\h\rt.h:10,
+                 from xfsys.c:7:
+c:/Program Files (x86)/mingw-w64/i686-4.9.0-posix-dwarf-rt_v3-rev2/mingw32/i686-w64-mingw32/include/sys/stat.h:171:2: note: expected 'struct stat *' but argument is of type 'struct _stat64i32 *'
+  fstat(int _Desc,struct stat *_Stat) {
+  ^
+rsys.r: In function 'detectRedirection':
+rsys.r:1952:8: warning: passing argument 2 of 'fstat' from incompatible pointer type
+    if (fstat(fileno(stdin), &sb) == 0) {
+        ^
+In file included from c:\Users\John\unicon-code\unicon\bin\..\src\h\../h/sys.h:92:0,
+                 from c:\Users\John\unicon-code\unicon\bin\..\src\h\rt.h:10,
+                 from xrsys.c:7:
+c:/Program Files (x86)/mingw-w64/i686-4.9.0-posix-dwarf-rt_v3-rev2/mingw32/i686-w64-mingw32/include/sys/stat.h:171:2: note: expected 'struct stat *' but argument is of type 'struct _stat64i32 *'
+  fstat(int _Desc,struct stat *_Stat) {
+  ^
+rsys.r:1965:8: warning: passing argument 2 of 'fstat' from incompatible pointer type
+    if (fstat(fileno(stdout), &sb) == 0) {
+        ^
+In file included from c:\Users\John\unicon-code\unicon\bin\..\src\h\../h/sys.h:92:0,
+                 from c:\Users\John\unicon-code\unicon\bin\..\src\h\rt.h:10,
+                 from xrsys.c:7:
+c:/Program Files (x86)/mingw-w64/i686-4.9.0-posix-dwarf-rt_v3-rev2/mingw32/i686-w64-mingw32/include/sys/stat.h:171:2: note: expected 'struct stat *' but argument is of type 'struct _stat64i32 *'
+  fstat(int _Desc,struct stat *_Stat) {
+  ^
+rposix.r: In function 'getmodefd':
+rposix.r:480:8: warning: passing argument 2 of 'fstat' from incompatible pointer type
+    if (fstat(fd, &st) < 0)
+        ^
+In file included from c:\Users\John\unicon-code\unicon\bin\..\src\h\../h/sys.h:92:0,
+                 from c:\Users\John\unicon-code\unicon\bin\..\src\h\rt.h:10,
+                 from xrposix.c:7:
+c:/Program Files (x86)/mingw-w64/i686-4.9.0-posix-dwarf-rt_v3-rev2/mingw32/i686-w64-mingw32/include/sys/stat.h:171:2: note: expected 'struct stat *' but argument is of type 'struct _stat64i32 *'
+  fstat(int _Desc,struct stat *_Stat) {
+  ^
+'c:\Program' is not recognized as an internal or external command,
+operable program or batch file.
+c:\Program Files (x86)\mingw-w64\i686-4.9.0-posix-dwarf-rt_v3-rev2\mingw32\bin\windres.exe: preprocessing failed.
+make[5]: *** [icon.o] Error 1
+make[4]: *** [freshiconx] Error 2
+make[3]: *** [nt_iconx] Error 2
+make[2]: *** [interp_all] Error 2
+make[1]: *** [Icon-icont] Error 2
+make: *** [WUnicon32] Error 2
