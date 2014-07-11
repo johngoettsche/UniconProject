@@ -136,7 +136,7 @@ enum pattern_codes{
 
 int internal_match(char * pat_sub, int Length, int Pat_S,
 		struct b_pelem * pattern, int *Start, int *Stop,
-		int initial_cursor );
+		int initial_cursor, int Anchored_Mode);
 static void cnv_str_pattern(dptr s, dptr p);
 static void cnv_cset_pattern(dptr s, dptr p);
 
@@ -615,7 +615,7 @@ function {*} pattern_match(underef psub -> dpsub, pat)
       phead = ResolvePattern(pattern) ;
       while ((curpos >= 0) &&
 	     internal_match(pattern_subject, subject_len, pattern->stck_size,
-			    phead, &start, &stop, curpos)
+			    phead, &start, &stop, curpos, 0)
 	     ){
 			oldpos = curpos;
 			curpos = stop;
@@ -883,7 +883,7 @@ end
 	 }
 #enddef
 
-function {1} PLen(count)
+function {1} Len(count)
    abstract {
       return pattern;
       }
@@ -1858,10 +1858,10 @@ else {
 
 #define Stack_Init 1
 #define Stack_Size 200
-static int Anchored_Mode = 0;
+/*static int Anchored_Mode = 0;*/
 int internal_match(char * pat_sub, int Length, int Pat_S,
 		   struct b_pelem * pattern, int *Start, int *Stop,
-		   int initial_cursor )
+		   int initial_cursor, int Anchored_Mode)
 {
    stack_entry Stack[Stack_Size];
    int Stack_Ptr , Stack_Base ;
@@ -1883,7 +1883,8 @@ int internal_match(char * pat_sub, int Length, int Pat_S,
       fprintf(stdout,"Pattern Stack Overflow");
       fatalerr(0,NULL);
       }
-   /* In anchored mode, the bottom entry on the stack is an abort entry */
+		
+   /* In anchored mode, the bottom entry on the stack is a cancel entry */
    if (Anchored_Mode) {
       Stack[Stack_Init].node = &CP_Cancel;
       Stack[Stack_Init].cursor = 0;
@@ -2535,11 +2536,11 @@ Node_Succeed:
       GetVarFromNodeParameter(Node);
       type_case var of {
       string: {
-	 int Len = StrLen(var);
+	 int LV_Len = StrLen(var);
 	 DEBUGF(20,(stdout, "Matching unevaluated String variable \n"));
-	 if ((Length - Cursor >= Len )
-	     && !strncmp(pat_sub + Cursor, StrLoc(var), Len)){
-	    Cursor = Cursor + Len;
+	 if ((Length - Cursor >= LV_Len )
+	     && !strncmp(pat_sub + Cursor, StrLoc(var), LV_Len)){
+	    Cursor = Cursor + LV_Len;
 	    goto Node_Succeed;
 	    }
 	 else
@@ -2845,11 +2846,11 @@ Node_Succeed:
       }
 
    case  PC_String : {
-      int Len = StrLen(Node->parameter);
-      DEBUGF(20,(stdout,"Matching String \"%*s\" against %s, Length %d Cursor %d Len %d\n", Len, StrLoc(Node->parameter), pat_sub+Cursor, Length, Cursor, Len));
-      if ((Length - Cursor >= Len) &&
-	  !strncmp(pat_sub + Cursor, StrLoc(Node->parameter), Len)) {
-	 Cursor = Cursor + Len;
+      int LV_Len = StrLen(Node->parameter);
+      DEBUGF(20,(stdout,"Matching String \"%*s\" against %s, Length %d Cursor %d Len %d\n", LV_Len, StrLoc(Node->parameter), pat_sub+Cursor, Length, Cursor, LV_Len));
+      if ((Length - Cursor >= LV_Len) &&
+	  !strncmp(pat_sub + Cursor, StrLoc(Node->parameter), LV_Len)) {
+	 Cursor = Cursor + LV_Len;
 	 goto Node_Succeed;
 	 }
       else
@@ -2857,13 +2858,13 @@ Node_Succeed:
       }
 
    case  PC_String_VP : {
-      int Len;
+      int LV_Len;
       GetVarFromNodeParameter(Node);
-      Len = StrLen(var);
+      LV_Len = StrLen(var);
       DEBUGF(20,(stdout,"Matching String\n"));
-      if ((Length - Cursor >= Len) &&
-	  !strncmp(pat_sub + Cursor, StrLoc(var), Len)) {
-	 Cursor = Cursor + Len;
+      if ((Length - Cursor >= LV_Len) &&
+	  !strncmp(pat_sub + Cursor, StrLoc(var), LV_Len)) {
+	 Cursor = Cursor + LV_Len;
 	 goto Node_Succeed;
 	 }
       else
@@ -2878,11 +2879,11 @@ Node_Succeed:
 	 goto Node_Fail;
       else {
 	 if (cnv_str(&cresult,&cresult)){
-	    int Len = StrLen(cresult);
+	    int LV_Len = StrLen(cresult);
 	    DEBUGF(20,(stdout,"Matching String\n"));
-	    if ((Length - Cursor >= Len) &&
-		!strncmp(pat_sub + Cursor, StrLoc(cresult), Len)) {
-	       Cursor = Cursor + Len;
+	    if ((Length - Cursor >= LV_Len) &&
+		!strncmp(pat_sub + Cursor, StrLoc(cresult), LV_Len)) {
+	       Cursor = Cursor + LV_Len;
 	       goto Node_Succeed;
 	       }
 	    else
@@ -2899,11 +2900,11 @@ Node_Succeed:
 	 goto Node_Fail;
       else {
 	 if (cnv_str(&cresult,&cresult)){
-	    int Len = StrLen(cresult);
+	    int LV_Len = StrLen(cresult);
 	    DEBUGF(20,(stdout,"Matching String\n"));
-	    if ((Length - Cursor >= Len )
-		&& !strncmp(pat_sub + Cursor, StrLoc(cresult), Len)){
-	       Cursor = Cursor + Len;
+	    if ((Length - Cursor >= LV_Len )
+		&& !strncmp(pat_sub + Cursor, StrLoc(cresult), LV_Len)){
+	       Cursor = Cursor + LV_Len;
 	       goto Node_Succeed;
 	       }
 	    else

@@ -111,7 +111,7 @@ FncDefV(writes)
      FncDef(Arbno,1)
      FncDef(pattern_concat,2) /* && */
      FncDef(pattern_alternate,2) /* or */
-     FncDef(pattern_setcur,2)
+     FncDef(pattern_setcur,2) /* .$ */
      FncDef(Succeed,0)
      FncDef(Bal,0)
      FncDef(Breakx,1)
@@ -120,7 +120,7 @@ FncDefV(writes)
      FncDef(Fence,1)
      FncDef(pattern_unevalvar,1)   /* `` */
      FncDef(pattern_fieldeval,1)   /* `x.y` */
-     FncDef(PLen,1)
+     FncDef(Len,1)
      FncDef(Cancel,0)
      FncDef(Rem,0)
      FncDef(pattern_stringfunccall,1)  /* ```` */
