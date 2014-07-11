@@ -1,0 +1,5 @@
+changed files:
+unicon-code\unicon\src\h\fdefs.h
+unicon-code\unicon\src\runtime\fxpattrn.ri
+
+original files end with .original

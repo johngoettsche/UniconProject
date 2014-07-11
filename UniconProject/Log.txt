@@ -1,0 +1,10 @@
+7/9/2014 - successfully made the following changes to patterns:
+	PNotAny() -> NotAny()
+	PSpan() -> Span()
+	PArb() -> Arb()
+	PArbno() -> Arbno()
+	PSucceed() -> Succeed()
+	PBreakx() -> Breakx()
+	PFence() -> Fence()
+	PCancel() -> Cancel()
+	PRest() -> Rem()

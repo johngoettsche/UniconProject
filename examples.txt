@@ -15,6 +15,8 @@ Var := |A
 
 Thoughts:  If it is possible to use | for alternation, then it would be preferable to do so for consistency sake, but when should Unicon default to string scanning and when does it default to patterns?
 
+Proposal:  add patterns to alternation.
+
 --------------------------------
 CONCATENATION
 (and)
@@ -33,6 +35,9 @@ Var := A ||| B
 
 Thoughts:  Implicit concatenation may be nice, but are there reduce-reduce issues with the grammar?  If it is possible to use || for concatenation, then it would be preferable to do so for consistency sake, but when should Unicon default to string scanning and when does it default to patterns?
 
+Proposal:  add patterns to the concatenation.
+
+
 --------------------------------
 PATTERN EVALUATION
 (and)
@@ -47,6 +52,8 @@ Unicon String Scanning:
 line ? expr
 
 Thoughts:  Do we need to differnt opperators for patterns and strings?  It would be nice to use ? for both, but when should Unicon default to string scanning and when does it default to patterns?
+
+Proposal:  the string scanning and pattern matching operators will check to see if the right side is either an expression or a pattern.  In the event it is a pattern then it will execute the pattern matching procedure in either the anchored method or the non-anchored method.  In the event that it is a expression then it will execute the string scanning procedure normally.
 
 --------------------------------
 MATCHING/SCANNING PROCESS
@@ -115,7 +122,7 @@ pattern := ("B" .| "R") -> Var
 Result:
 Var = B or R if overall pattern is successful
 
-Thoughts:  I find -> to graphically illiterates its purpose while the . to be a bit confusing. 
+Thoughts:  I find `->` to graphically illiterates its purpose while the `.` to be a bit confusing. 
 
 --------------------------------
 IMMEDIATE ASSIGNMENT
@@ -130,6 +137,8 @@ Result:
 Var = B or R when matched even if overall pattern fails
 
 Thoughts:  I find $$ graphically not consistent with the conditional assignment operator, how about $> for immediate assignment resulting is -> $> and .> for assignments?  This is a minor issue that I am sensitive to because of my art and cartography background.
+
+Proposal:  change the symbol to `$>`.
 
 --------------------------------
 CURSOR ASSIGNMENT
@@ -152,6 +161,8 @@ y = 9
 
 Thoughts:  I find .$ graphically not consistent with the conditional assignment operator, .> for cursor or &pos assignment resulting is -> $> and .> for assignments?  This is a minor issue that I am sensitive to because of my art and cartography background.
 
+Proposal:  change the symbol to `.>`.
+
 --------------------------------
 REPLACEMENT STATEMENT
 
@@ -167,6 +178,8 @@ result:
 word = GOURD
 
 Thoughts:  This actually works, but I am not sure why.
+
+Proposal:  don't mess with it.
 
 --------------------------------
 LEN(n)/PLen(n)
@@ -198,8 +211,12 @@ DAY = 09
 
 Thoughts:  I find the P at the beginning of every built-in function to be annoying.  Len() or len() do not appear to be used, so would it make more sense to use one of those?  
 
+Proposal:  change PLen(n) to Len(n) 
+
+7/9/14 - found a conflict in fxpattrn.ri with Len.
+
 --------------------------------
-SPAN()/PSpan()
+SPAN()/PSpan(c)
 
 SNOBOL4:
 line = "1966 AUG. 09 John"
@@ -213,13 +230,20 @@ Unicon Strings:
 line := "1966 AUG. 09 John"
 line ? year := tab(many(&digits))
 
+Regular Expressions:
+[0123456789]*
+
 result:
 year = 1966
 
-Thoughts:  I find the P at the beginning of every built-in function to be annoying.  Span() or span() do not appear to be used, so would it make more sense to use one of those?
+Thoughts:  I find the P at the beginning of every built-in function to be annoying.  Regular expressions are much simpler in this case; would it be easier to adopt the regular expression * with a cset?
+
+Proposal:  change PSpan(c) to c* for csets.
+
+7/9/14 - PSpan(c) was changed to Span(c)
 
 --------------------------------
-BREAK()/PBreak()
+BREAK()/PBreak(c)
 
 SNOBOL4:
 line = "1966 AUG. 09 John"
@@ -238,8 +262,31 @@ year = 1966
 
 Thoughts:  I find the P at the beginning of every built-in function to be annoying.  break is already used, but Break is not, so should we use Break() instead of PBreak()?  If we do, for consistency sake we might want to start the pattern built in functions with a capital letter.
 
+Proposal:  change PBreak(c) to Break(c)
+
+7/9/14 - changed PBreak(c) to Break(c)
+
 --------------------------------
-ANY()/PAny()
+PBreakx(c)
+
+Unicon Patterns:
+out := &output
+line := "ab1cdef1ghi"
+if line ?? (PBreakx('1') $$ out && "1g") -> pat then
+	write("pattern: " || pat)
+
+result:
+ab
+ab1cdef
+pattern: ab1cdef1g
+
+Thoughts:  I find the P at the beginning of every built-in function to be annoying.  break is already used, but Break is not, so should we use Breakx() instead of PBreakx()?  If we do, for consistency sake we might want to start the pattern built in functions with a capital letter.
+
+Proposal:  change PBreakx(c) to Breakx(c)
+
+7/9/14 - changed PBreakx(c) to Breakx(c)
+--------------------------------
+ANY()/PAny(c)
 
 SNOBOL4:
 vowels = ANY('aeiou')
@@ -263,8 +310,12 @@ result = e
 
 Thoughts:  I find the P at the beginning of every built-in function to be annoying.  any is already used, but Any is not, so should we use Any() instead of PBreak()?  If we do, for consistency sake we might want to start the pattern built in functions with a capital letter.
 
+Proposal:  change PAny(c) to Any(c)
+
+7/9/14 - changed PAny(c) to Any(c)
+
 --------------------------------
-NOTANY()/PNotAny()
+NOTANY()/PNotAny(c)
 
 SNOBOL4:
 cons = NOTANY('aeiou')
@@ -287,7 +338,12 @@ line ? {
 result:
 result = b
 
-Thoughts:  I find the P at the beginning of every built-in function to be annoying.  NotAny() or notany() do not appear to be used, so would it make more sense to use one of those?
+Thoughts:  I find the P at the beginning of every built-in function to be annoying.  NotAny() or notany() do not appear to be used, so would it make more sense to use one of those?  Also, PNotAny(c) appears to get the same results as PAny(~c); is one method more efficient than the other?
+
+Proposal:  change PNotAny(c) to NotAny(c)
+
+7/9/14 - PNotAny(c) was changed to NotAny(c)
+
 --------------------------------
 TAB()/PTab()
 
@@ -307,6 +363,8 @@ result:
 result = OBO
 
 Thoughts:  I find the P at the beginning of every built-in function to be annoying.  pattern matching cursor position and string scanning &pos are similar but not necessarily consistent.  It would make sense to use the string scanning &pos if that is possible.  If not, then the Tab() could use negative index numbers instead of positive index numbers for RTab().  It would be nice to have these be consistent with string scanning.
+
+Proposal:  change the tab(n) in string scanning to update the cursor location in patterns and do away with PAny(n).  And update the pattern cursor position system to match the string scanning position system.
 
 --------------------------------
 RTAB()/PRtab()
@@ -328,8 +386,10 @@ result = OBOL
 
 Thoughts:  pattern matching cursor position and string scanning &pos are similar but not necessarily consistent.  It would make sense to use the string scanning &pos if that is possible.  If not, then the Tab() could use negative index numbers instead of positive index numbers for RTab().  It would be nice to have these be consistent with string scanning.
 
+Proposal:  this becomes redundant after the proposed changes to PTab(n).
+
 --------------------------------
-REM()/PRest()
+REM/PRest()
 
 SNOBOL4:
 'SNOBOL4'  LEN(2) REM . result
@@ -343,13 +403,20 @@ Unicon Strings:
 	result := tab(0)
 }
 
+Regular Expressions:
+.*
+
 result:
 result = OBOL4
 
-Thoughts:  Rest() or rest() do not appear to be used, so would it make more sense to use one of those?
+Thoughts:  Rest() or rest() do not appear to be used, so would it make more sense to use one of those?  Regular expressions are much simpler in this case; would it be easier to adopt a symbol or use the regular expression?
+
+Proposal:  change PRest() to be called with the the symbol `||-` or `.*`.
+
+7/9/14 - PRest() was changed to Rem()
 
 --------------------------------
-POS()/PPos()
+POS(n)/PPos(n)
 
 SNOBOL4:
 'SNOBOL4'  POS(2) REM . result
@@ -368,8 +435,10 @@ result = NOBOL4
 
 Thoughts:  pattern matching cursor position and string scanning &pos are similar but not necessarily consistent.  It would make sense to use the string scanning &pos if that is possible.  If not, then the Pos() could use negative index numbers instead of positive index numbers for Rpos().  It would be nice to have these be consistent.
 
+Proposal:  change PPos(n) to Pos(n) and make it function the same as with string scanning, and make it work with string scanning as well.
+
 --------------------------------
-RPOS()/PRpos()
+RPOS(n)/PRpos(n)
 
 SNOBOL4:
 'SNOBOL4'  RPOS(4) REM . result
@@ -387,6 +456,8 @@ result:
 result = BOL4
 
 Thoughts:  pattern matching cursor position and string scanning &pos are similar but not necessarily consistent.  It would make sense to use the string scanning &pos if that is possible.  If not, then the Pos() could use negative index numbers instead of positive index numbers for Rpos().  It would be nice to have these be consistent.  Currently pos(i) checks to see if the current position is at i.
+
+Proposal:  PRpos(n) will become a redundant function with the proposed changes to PPos(n).
 
 --------------------------------
 FAIL/PFail()
@@ -408,6 +479,8 @@ PI
 
 Thoughts:  I find the P at the beginning of every built-in function to be annoying.  fail is already used, but Fail is not, so should we use Fail() instead of PFail()?  If we do, for consistency sake we might want to start the pattern built in functions with a capital letter.
 
+Proposal:  change PFail() to Fail() or some other symbol.
+
 --------------------------------
 FENCE/PFence()
 
@@ -424,6 +497,9 @@ result:
 
 Thoughts:  I find the P at the beginning of every built-in function to be annoying.  Fence() and fence() are not, so should we use one of them instead of PFail()? 
 
+proposal:  change PFence() to Fence() or `-|`.
+
+7/9/14 - PFence() was changed to Fence()
 --------------------------------
 ABORT/PCancel()
 
@@ -441,6 +517,10 @@ result:
 -fails-  when it finds "li" PCancel() makes the pattern cancel its operation and return a failure.  If the "ne" as changed to something that appears before "li" then it would succeed with that substring.
 
 Thoughts:  I find the P at the beginning of every built-in function to be annoying.  Cancel() and cancel() are not, so should we use one of them instead of PCancel()? 
+
+Proposal:  change PCancel() to Cancel() or some other symbol.
+
+7/9/14 - PCancel() was changed to Cancel()
 
 --------------------------------
 ARB/PArb()
@@ -460,27 +540,38 @@ estlin
 
 Thoughts:  I find the P at the beginning of every built-in function to be annoying.  Arb() and arb() are not, so should we use one of them instead of PArb()? 
 
+Proposal:  change PArb() to `...`
+
+7/9/14 - PArb() was changed to Arb()
+
 --------------------------------
-ARBNO/PArbno()
+ARBNO/PArbno(p)
 
 SNOBOL4:
 item = span('0123456789')
-pattern := PPos(1) && item && PArbno(',' && item)
+pattern := '(' item PArbno(',' item) ')' . pat
 
 Unicon Patterns:
 out := &output
 item := PSpan(&digits)
-pattern := PPos(1) && item && PArbno("," && item)
-if "12,234" ?? pattern then write("Match succeeded")
+pattern := ("(" && item && PArbno("," && item) && ")") -> pat
+if "(12,234)" ?? pattern then write(pat)
 else write("Match Failed")
-if "12,,234" ?? pattern then write("Match succeeded")
+if "12,,234" ?? pattern then write(pat)
 else write("Match Failed")
+
+Regular Expressions:
+[0123456789]*(,[0123456789]*)+
 
 result:
-Match succeeded
-Match succeeded(this one should fail)
+(12,234)
+Match Failed
 
-Thoughts:  Something is not working with PArbno().  After playing around with it I found that is is not making a pattern or substring, and is returning a success.  
+Thoughts:  PArbno(p) requires a bound to concatenated following its function call.  If we use the `*` regular expressions for PSpan(c) it would make sence to use it with strings and patterns.
+
+Proposal:  change PArbno(p) to p* for patterns and s* for strings.
+
+7/9/14 - PArbno(p) was changed to Arbno(p)
 
 --------------------------------
 BAL/PBal()
@@ -516,6 +607,8 @@ unicon strings result:
 
 Thoughts:  I find the P at the beginning of every built-in function to be annoying.  bal is used and Bal() is not, so should we use Bal() of them instead of PBal()? 
 
+Proposal:  change PBal() to Bal()
+
 --------------------------------
 UNEVALUATED EXPRESSIONS
 
@@ -547,15 +640,21 @@ result:
 hij
 defghij
 
-Thoughts:  
+Thoughts: 
+
+Proposal:  Leave this as is for now.
 
 --------------------------------
 Anchored Mode: the pattern much succeed starting with the first character in the string.  This is not implemented in Unicon Patterns.
 
 Thoughts:  The ? operator in string scanning sets the scan at the beginning of the string.  If we do adapt the ? operator to handle pattern matching, it would be consistent implement it using the Anchored mode restriction.
 
+Proposal:  use ? for anchored mode.
+
 --------------------------------
 Non-Anchored Mode: the pattern can match at any starting location in the string.  This is the standard mode used in Unicon Patterns.
+
+Proposal:  use ?? for non-anchored mode.
 
 --------------------------------
 Quickscan Mode: In this method, each bead is assigned a number for the shortest lenth of a matched substring if the bead is selected.  If this number is greater than the number of charcters left in the string then it will not be checked.  
