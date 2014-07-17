@@ -158,16 +158,30 @@ end
 
 function{0,1+} ev(p)
 
-   if !def:C_pattern(p, 0) then
-      runerr(101, p);
 
+/*
+Need to test p for pattern type
+   if !def:C_integer(i, 0) then
+      runerr(101, i);
+*/
    abstract {
       return string
       }
 
    body {
-      C_integer j, t, oldpos;
-      CURTSTATE();
+		int curpos = 0;
+   /*   int oldpos;*/
+      int start;
+      int stop;
+      struct b_pattern *pattern;
+      tended struct b_pelem *phead;
+		CURTSTATE();
+      char * pattern_subject = StrLoc(k_subject);
+      int subject_len = StrLen(k_subject);
+      int new_len;
+	
+      C_integer j, t, oldpos, i;
+      
 
       /*
        * Save old &pos.  Local variable j holds &pos before the pattern match.
@@ -175,26 +189,18 @@ function{0,1+} ev(p)
 		 
       oldpos = j = k_pos;
 		
-		 
-		/*
-		 * Set pattern variables
-		 *		Cursor position
-		 */
-		
-		
 		/*
 		 * Match Pattern
 		 */
-		 
-	/*	 
-		 internal_match(char * pat_sub, int Length, int Pat_S,
-		   struct b_pelem * pattern, int *Start, int *Stop,
-		   k_pos, 1)
-	*/	 
+		printf("running pattern match...");
+		internal_match(pattern_subject, subject_len,
+				pattern->stck_size, phead, &start, 
+				&stop, k_pos, 1);
+		printf("complete");
+		i = stop;
 /********************************************************************************/
 		 
-      k_pos = i;
-      EVVal(k_pos, E_Spos);
+   /*   EVVal(k_pos, E_Spos); */
 
       /*
        *  Make i the length of the substring &subject[i:j]

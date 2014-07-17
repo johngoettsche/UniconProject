@@ -1859,9 +1859,15 @@ else {
 #define Stack_Init 1
 #define Stack_Size 200
 /*static int Anchored_Mode = 0;*/
-int internal_match(char * pat_sub, int Length, int Pat_S,
-		   struct b_pelem * pattern, int *Start, int *Stop,
-		   int initial_cursor, int Anchored_Mode)
+int internal_match(
+			char * pat_sub, 
+			int Length, 
+			int Pat_S,
+		   struct b_pelem * pattern, 
+			int *Start, 
+			int *Stop,
+		   int initial_cursor, 
+			int Anchored_Mode)
 {
    stack_entry Stack[Stack_Size];
    int Stack_Ptr , Stack_Base ;
@@ -1887,7 +1893,8 @@ int internal_match(char * pat_sub, int Length, int Pat_S,
    /* In anchored mode, the bottom entry on the stack is a cancel entry */
    if (Anchored_Mode) {
       Stack[Stack_Init].node = &CP_Cancel;
-      Stack[Stack_Init].cursor = 0;
+      Stack[Stack_Init].cursor = initial_cursor;
+	/*	Stack[Stack_Init].cursor = 0;*/
       }
 /*
  *       --  In unanchored mode, the bottom entry on the stack references
@@ -1946,20 +1953,20 @@ Match_Succeed:
 	    GetVarFromNodeParameter(Node_OnM);
 	    if (Node_OnM->pcode == PC_Assign_OnM){
 	       if (var.dword == D_File) {
-		  struct b_file *f;
-		  f = (struct b_file *)BlkLoc(var);
-		  MYWriteToFile(f->fd.fp,Stop - Start,pat_sub + Start);
-		  }
+				struct b_file *f;
+				f = (struct b_file *)BlkLoc(var);
+				MYWriteToFile(f->fd.fp,Stop - Start,pat_sub + Start);
+			 }
 	       else
-		  Set_String(pvar,pat_sub,Start, Stop );
-	       }
+				Set_String(pvar,pat_sub,Start, Stop );
+	    }
 	    else {
 	       fprintf(stdout,"Logic Error in internal_match");
 	       fatalerr(0, NULL);
-	       }
 	    }
 	 }
-      }
+		}
+   }
    return 1;
 Node_Fail:
 /*
