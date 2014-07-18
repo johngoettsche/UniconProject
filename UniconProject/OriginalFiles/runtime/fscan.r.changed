@@ -156,78 +156,83 @@ end
 
 "ev(p) - return substring of &subject matched with pattern p."
 
-function{0,1+} ev(p)
-
-
-/*
-Need to test p for pattern type
-   if !def:C_integer(i, 0) then
-      runerr(101, i);
-*/
-   abstract {
-      return string
-      }
-
+function{*} ev(pat)
+/*	declare {
+      int use_trap = 0;
+   }*/
+   /*
+    *  psub must either be a string or be convertible to one. Decide
+    *  whether a substring trapped variable can be created.
+    */
+/*	
+   if is:variable(psub) && is:string(dpsub) then {
+      abstract {
+			return new tvsubs(type(psub))
+		}
+      inline {
+			use_trap = 1;
+		}
+   }
+   else if cnv:tmp_string(dpsub) then
+      abstract {
+			return string
+		}
+   else
+      runerr(114, dpsub);
+*/		
+	abstract{
+		return string
+	}
+	
    body {
-		int curpos = 0;
-   /*   int oldpos;*/
+      int curpos;
+      int oldpos;
       int start;
       int stop;
       struct b_pattern *pattern;
       tended struct b_pelem *phead;
 		
-      char * pattern_subject = StrLoc(k_subject); /*  <- "char": syntax error(249;299)*/
-      int subject_len = StrLen(k_subject);
+      char * pattern_subject;
+      int subject_len;
       int new_len;
-	
-      C_integer j, t, oldpos, i;
-   
 		CURTSTATE();
-
-      /*
-       * Save old &pos.  Local variable j holds &pos before the pattern match.
-       */
-		 
-      oldpos = j = k_pos;
 		
-		/*
-		 * Match Pattern
-		 */
-		printf("running pattern match...");
-		internal_match(pattern_subject, subject_len,
-				pattern->stck_size, phead, &start, 
-				&stop, k_pos, 1);
-		printf("complete");
-		i = stop;
-		 
-   /*   EVVal(k_pos, E_Spos); */
-
-      /*
-       *  Make i the length of the substring &subject[i:j]
-       */
-      if (j > i) {
-         t = j;
-         j = i;
-         i = t - j;
-         }
-      else
-         i = i - j;
-
-      /*
-       * Suspend the portion of &subject that was tabbed over.
-       */
-      suspend string(i, StrLoc(k_subject) + j - 1);
-
-      /*
-       * If tab is resumed, restore the old position and fail.
-       */
-      if (oldpos > StrLen(k_subject) + 1)
-         runerr(205, kywd_pos);
-      else {
-         k_pos = oldpos;
-         EVVal(k_pos, E_Spos);
-         }
-
-      fail;
-      }
+		curpos = k_pos;
+		pattern_subject = StrLoc(k_subject);
+		subject_len = StrLen(k_subject);
+/*		
+      type_case pat of {
+			string : {
+				cnv_str_pattern(&pat,&pat);
+			}
+			cset :{
+				cnv_cset_pattern(&pat,&pat);
+			}
+         pattern:{
+			}
+         default:{
+				runerr(127);
+			}
+		}*/
+		
+      pattern = (struct b_pattern *)BlkLoc(pat);
+      phead = ResolvePattern(pattern) ;
+      /*while ((curpos >= 0) &&*/
+	   if (internal_match(pattern_subject, subject_len, pattern->stck_size,
+				phead, &start, &stop, curpos, 1)){
+			oldpos = curpos;
+			curpos = stop;
+	/*		if (use_trap == 1)
+				suspend tvsubs(&psub, start+1,stop - start);
+			else*/
+				suspend string(stop - start, StrLoc(k_subject)+ start);
+			/*deref(&psub,&dpsub);*/
+			pattern_subject = StrLoc(k_subject);
+			if (subject_len != StrLen(k_subject)) {
+				curpos += StrLen(k_subject) - subject_len;
+				subject_len = StrLen(k_subject);
+			}
+		}
+		fail;
+   }
 end
