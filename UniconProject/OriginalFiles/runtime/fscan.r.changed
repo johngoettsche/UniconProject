@@ -157,31 +157,16 @@ end
 "ev(p) - return substring of &subject matched with pattern p."
 
 function{*} ev(pat)
-/*	declare {
-      int use_trap = 0;
-   }*/
    /*
-    *  psub must either be a string or be convertible to one. Decide
-    *  whether a substring trapped variable can be created.
+    *  pat must be a pattern.
     */
-/*	
-   if is:variable(psub) && is:string(dpsub) then {
-      abstract {
-			return new tvsubs(type(psub))
-		}
-      inline {
-			use_trap = 1;
-		}
-   }
-   else if cnv:tmp_string(dpsub) then
-      abstract {
+
+	if is:pattern(pat) then {
+		abstract{
 			return string
 		}
-   else
-      runerr(114, dpsub);
-*/		
-	abstract{
-		return string
+	}else{
+		runerr(114, pat);
 	}
 	
    body {
@@ -197,42 +182,54 @@ function{*} ev(pat)
       int new_len;
 		CURTSTATE();
 		
+		/*
+		 * set cursor position, and subject to match
+		 */
 		curpos = k_pos;
 		pattern_subject = StrLoc(k_subject);
 		subject_len = StrLen(k_subject);
-/*		
-      type_case pat of {
-			string : {
-				cnv_str_pattern(&pat,&pat);
-			}
-			cset :{
-				cnv_cset_pattern(&pat,&pat);
-			}
-         pattern:{
-			}
-         default:{
-				runerr(127);
-			}
-		}*/
-		
       pattern = (struct b_pattern *)BlkLoc(pat);
-      phead = ResolvePattern(pattern) ;
-      /*while ((curpos >= 0) &&*/
+      phead = ResolvePattern(pattern);
+		
+		/*
+		 * runs a pattern match in the Anchored Mode and returns
+		 * a sub-string if it succeeds.
+		 */
+	printf("k_pos: %d, curpos: %d\n", k_pos, curpos);	
 	   if (internal_match(pattern_subject, subject_len, pattern->stck_size,
 				phead, &start, &stop, curpos, 1)){
+			/*
+			 * Set new &pos.
+			 */		 
+			k_pos = stop;
+			EVVal(k_pos, E_Spos);	
 			oldpos = curpos;
-			curpos = stop;
-	/*		if (use_trap == 1)
-				suspend tvsubs(&psub, start+1,stop - start);
-			else*/
-				suspend string(stop - start, StrLoc(k_subject)+ start);
-			/*deref(&psub,&dpsub);*/
+			curpos = k_pos;
+	printf("k_pos: %d, curpos: %d\n", k_pos, curpos);	
+	printf("start: %d, stop: %d\n", start, stop);	
+
+			/*
+			 * Suspend sub-string that matches pattern.
+			 */
+			suspend string(stop - start, StrLoc(k_subject)+ start);
+	
 			pattern_subject = StrLoc(k_subject);
 			if (subject_len != StrLen(k_subject)) {
 				curpos += StrLen(k_subject) - subject_len;
 				subject_len = StrLen(k_subject);
 			}
 		}
+		
+		/*
+       * If tab is resumed, restore the old position and fail.
+       */
+      if (oldpos > StrLen(k_subject) + 1)
+         runerr(205, kywd_pos);
+      else {
+         k_pos = oldpos;
+         EVVal(k_pos, E_Spos);
+         }
+		
 		fail;
    }
 end
