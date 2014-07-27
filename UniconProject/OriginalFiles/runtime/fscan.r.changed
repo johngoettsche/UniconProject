@@ -1,6 +1,6 @@
 /*
  * File: fscan.r
- *  Contents: move, pos, tab.
+ *  Contents: move, pos, tab, ev.
  */
 
 "move(i) - move &pos by i, return substring of &subject spanned."
@@ -195,7 +195,6 @@ function{*} ev(pat)
 		 * runs a pattern match in the Anchored Mode and returns
 		 * a sub-string if it succeeds.
 		 */
-	printf("k_pos: %d, curpos: %d\n", k_pos, curpos);	
 	   if (internal_match(pattern_subject, subject_len, pattern->stck_size,
 				phead, &start, &stop, curpos, 1)){
 			/*
@@ -204,9 +203,7 @@ function{*} ev(pat)
 			k_pos = stop;
 			EVVal(k_pos, E_Spos);	
 			oldpos = curpos;
-			curpos = k_pos;
-	printf("k_pos: %d, curpos: %d\n", k_pos, curpos);	
-	printf("start: %d, stop: %d\n", start, stop);	
+			curpos = k_pos;	
 
 			/*
 			 * Suspend sub-string that matches pattern.
