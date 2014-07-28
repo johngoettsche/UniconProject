@@ -894,7 +894,7 @@ function {1} Len(count)
       }
 end
 
-function {1} PPos(position)
+function {1} Pos(position)
    abstract {
       return pattern;
       }
@@ -905,7 +905,7 @@ function {1} PPos(position)
       }
 end
 
-function {1} PRpos(position)
+function {1} Rpos(position)
    abstract {
       return pattern;
       }
@@ -916,7 +916,7 @@ function {1} PRpos(position)
       }
 end
 
-function {1} PTab(count)
+function {1} Tab(count)
    abstract {
       return pattern;
       }
@@ -927,7 +927,7 @@ function {1} PTab(count)
       }
 end
 
-function {1} PRtab(count)
+function {1} Rtab(count)
    if !cnv:integer(count) then
       runerr(103,count)
    abstract {
@@ -1711,7 +1711,7 @@ else {
       var = *pvar;
       }
    else {
-      fprintf(stderr, "oh my, parameter\n\n\t%16x\n\t%16x\n\npvar %p\n",
+      fprintf(stderr, "parameter\n\n\t%16x\n\t%16x\n\npvar %p\n",
 	      Node->parameter.dword, Node->parameter.vword.integr,
 	      pvar);
       fprintf(stderr, "bad descriptor in .$ or some such\n");
