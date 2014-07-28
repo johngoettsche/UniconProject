@@ -40,7 +40,6 @@ Proposal:  add patterns to the concatenation.
 
 --------------------------------
 PATTERN EVALUATION
-(and)
 
 SNOBOL4:
 line  pattern

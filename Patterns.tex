@@ -1,0 +1,225 @@
+
+\documentclass{article}
+
+%\usepackage{fullpage}
+%\usepackage{setspace}
+%\doublespacing
+
+\usepackage{cite}
+
+\usepackage[pdftex]{graphicx}
+% declare the path(s) where your graphic files are
+\graphicspath{{./images/}}
+ % and their extensions so you won't have to specify these with
+ % every instance of \includegraphics
+ \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+%\usepackage{fancyhdr}
+
+\begin{document}
+
+\title{Integrating pattern data types within Unicon string scanning}
+\author{John H. Goettsche\\
+  Dept.\ of Computer Science\\
+  University of Idaho}
+
+\maketitle
+
+\begin{abstract}
+
+
+\end{abstract}
+
+\section{Introduction}
+
+Unicon string scanning functions were inherited from the Icon language.  Many programmers have expressed a desire for the functionality of SNOBOL4 patterns.  \cite{Griswold1980}  The Unicon string scanning functions may resemble SNOBOL4 patterns, but they are actually different in both how they processed as well as their functionality.  
+
+Patterns are defined data types that used deductively to test whether the pattern exists within a subject string, while a string scanning uses a set of functions used inductively to analyze or extract data from the subject string.  The difference being that patterns are pre-defined and applied, while string scanning is performed as they are executed.
+
+This paper briefly explores the background of SNOBOL4 patterns and Unicon string scanning functions, a proposed design considerations of implementing SNOBOL4 patterns within the Unicon string scanning environment, and description of how that implementation can be accomplished. 
+
+\section{Background}
+
+SNOBOL4 was developed by Bell Telephone Laboratories in 1962.  Searching for a desired pattern within a string of characters is one of its basic operations.  Patterns could be as simple as a single character or a set of characters in a particular order, or it can be a complex arrangement with alternative character sets and pattern function.  The pattern data type was used enabling the user to define and store patterns as variables to be used later when they were desired.\cite{Snobol}
+
+One of the developers of SNOBOL4, Ralph Griswold, went to the University of Arizona and developed the Icon programming language which was more readable and simpler to use.\cite{JefferyUnicon}  Unlike most other languages Icon considers the string as a data type in its own right, rather that a set of characters. \cite{GriswoldIcon}  The string scanning environment allows the user to execute a variety of string functions to search for sub-strings or patterns.
+
+Using the same Icon source code, Unicon was developed to include modern software features such as objects, networks and databases. \cite{JefferyUnicon} The string scanning environment of Icon is a part of the Unicon programming language.  Master's student, Sudarshan Gaikaiwari proposed adopting SNOBOL4 patterns to the Unicon language.  In his thesis, he added the pattern data type, and provided pattern matching functions to execute the pattern searches.\cite{Gaikaiwari2005}  The pattern data type was kept separate from the string scanning environment.  This paper proposes the pattern matching proposed by Gaikaiwari be refined to be more naturally incorporated in the Unicon language with the string scanning environment implement the pattern matching functionality.
+
+\section{Design Considerations}
+
+
+
+\subsection{Pattern matching statements}
+The pattern matching statement in SNOBOL4 and Gaikaiwari's Unicon implementation are in the following statements:\\
+
+\noindent
+SNOBOL4:
+\begin{verbatim}
+SUBJECT  PATTERN
+\end{verbatim}
+\noindent
+Unicon:
+\begin{verbatim}
+subject ?? pattern
+\end{verbatim}
+
+In the above lines, the subject would be scanned to see if it contains the contents of the pattern, if it succeeds, then a substring of the subject that fits the pattern would be returned.  With the SNOBOL4 operation the pattern has to begin its match at the first character of the subject string in the anchored mode; in the non-anchored mode the pattern could start at any character in the string. \cite{Snobol}  The Unicon operation is in the non-anchored mode by default. \cite{Gaikaiwari2005}
+
+The Unicon string scanning evironment is initialized in the following statement:
+
+\begin{verbatim}
+subject ? expr
+\end{verbatim}
+
+The '?' operator sets the cursor location to the first position in the subject string and the function or the block of functions that are called in the expression are executed.  Each function moves the cursor upon success, for this reason, I propose if in the event that a pattern is encountered with the tabmat '=' operator, the pattern match be performed in the anchored mode, with the cursor being advanced to the end of the matching pattern if there is success.
+
+\subsection{SNOBOL4 and Unicon pattern operators}
+
+
+
+\begin{table}[ht]
+	\caption{Pattern Operators}
+	\centering
+	\begin{tabular}{|l|l|l|}
+		\hline\hline
+		Operation & SNOBOL4 & Unicon \\
+		\hline
+		Concatenation & implicit & $||$ \\
+		Alternation & $|$ & $.|$ \\
+		Immediate Assignment & \$ & \$\$ \\
+		Conditional Assignment & . & $->$ \\
+		Cursor Assignment & @ & .\$ \\
+		Unevaluated Expression & $*$x & `x` \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsection{SNOBOL4 and Unicon pattern functions}
+
+The table below shows the SNOBOL4 primitive functions and the recommended Unicon pattern functions.  In most cases it is recommended that the function be lexically similar with the first character being capitalized and the following letters in lower-case, with a couple of exceptions for FAIL and ABORT.  Fail appears to be already used in Unicon, therefore PFail is being recomended to represent Pattern Fail.  Abort is being changed to Cancel to represent the cancellation of the entire matching operation.  This results in the following set of Unicon pattern functions in comparison to their original SNOBOL4 pattern functions:
+
+\begin{table}[ht]
+	\caption{Pattern Functions}
+	\centering
+	\begin{tabular}{|l|l|}
+		\hline\hline
+		SNOBOL4 & Unicon \\
+		\hline
+		LEN(n) & Len(n) \\
+		SPAN(c) & Span(c)  \\
+		BREAK(c) & Break(c) \\
+		ANY(c) & Any(c) \\
+		NOTANY(c) & NotAny(c) \\
+		TAB(n) & Tab(n) \\
+		RTAB(n) & Rtab(n) \\
+		REM & Rem() \\
+		POS(n) & Pos(n)  \\
+		RPOS(n) & Rpos(n)  \\
+		FAIL & PFail() \\
+		FENCE & Fence() \\
+		ABORT & Cancel() \\
+		ARB & Arb() \\
+		ARBNO(p) & Arbno(p) \\
+		BAL & Bal() \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\pagebreak
+Len(n) function matches a string of characters of n length beginning from the current cursor position, for example: \\
+
+\noindent
+SNOBOL4:
+\begin{verbatim}
+line = '1941 Dec. 07'
+infamy = LEN(4) . YR ' ' LEN(4) . MO ' ' LEN(2) . DAY
+line  infamy
+\end{verbatim}
+
+\noindent
+Unicon pattern matching:
+\begin{verbatim}
+line := "1941 Dec. 07"
+infamy := Len(4) $$ YR && " " && Len(4) $$ MO && " " && Len(2) $$ DAY 
+line ?? infamy
+\end{verbatim}
+or
+\begin{verbatim}
+line := "1941 Dec. 07"
+infamy := Len(4) $$ YR && " " && Len(4) $$ MO && " " && Len(2) $$ DAY 
+line ? {
+	=infamy
+}
+\end{verbatim}
+
+\noindent
+Unicon string scanning:
+\begin{verbatim}
+line := "1941 Dec. 07"
+line ? {
+	YR := move(4)
+	move(1)
+	MO := move(4)
+	move(1)
+	DAY := move(2)
+}
+\end{verbatim}
+
+\noindent
+result:
+\begin{verbatim}
+MO = Dec.
+DAY = 07
+YR = 1941
+\end{verbatim}
+
+In each case YR is being assigned the substring of four characters from the first Len(4) or Move(4) functions.  Then after a blank space, MO is assigned the substring of four characters from the second Len(4) or Move(4) functions.  Finally after another blank space, Day is assigned the two letter substring from the Len(2) or move(2) functions.
+
+\pagebreak
+Span(c) will match any continuous set of characters in the cset c, for example:\\
+
+\noindent
+SNOBOL4:
+\begin{verbatim}
+line = '1941 Dec. 07'
+line  SPAN('0123456789') . year
+\end{verbatim}
+
+\noindent
+Unicon Patterns:
+\begin{verbatim}
+line := "1941 Dec. 07"
+line ?? Span(&digits) -> year
+\end{verbatim}
+or
+\begin{verbatim}
+line := "1941 Dec. 07"
+pattern := Span(&digits)
+line ? {
+year := pattern
+}
+\end{verbatim}
+
+\noindent
+Unicon Strings:
+\begin{verbatim}
+line := "1941 Dec. 07"
+line ? year := tab(many(&digits))
+\end{verbatim}
+
+\noindent
+result:
+\begin{verbatim}
+year = 1941
+\end{verbatim}
+
+In the first two cases the patterns will return the substring of the first set of digits it encounters, and the last two cases it will return the substring of digits at the beginning of the string, all of which are "1941".
+
+
+\section{Implementation}
+
+\pagebreak
+\bibliography{Patterns}
+\bibliographystyle{plain}
+
+\end{document}

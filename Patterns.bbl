@@ -1,0 +1,28 @@
+\begin{thebibliography}{1}
+
+\bibitem{Gaikaiwari2005}
+Sudarshan Gaikaiwari.
+\newblock {\em Adapting SNOBOL-style Patterns to the Unicon Language}.
+\newblock PhD thesis, New Mexico State University, 2005.
+
+\bibitem{Griswold1980}
+Ralph~E Griswold.
+\newblock {\em Pattern Matching in Icon}.
+\newblock University of Arizona, Department of Computer Science, 1980.
+
+\bibitem{GriswoldIcon}
+Ralph~E Griswold and Madge~T Griswold.
+\newblock {\em The Icon programming language}, volume~30.
+\newblock Prentice-Hall Englewood Cliffs, NJ, 1983.
+
+\bibitem{Snobol}
+Ralph~E Griswold, Ivan~Paul Polonsky, and JF~Poage.
+\newblock The snobol4 programming language.
+\newblock 1971.
+
+\bibitem{JefferyUnicon}
+Clinton Jeffery, Shamim Mohamed, Ray Pereda, and Robert Parlett.
+\newblock Programming with unicon.
+\newblock {\em Draft manuscript from http://unicon. sourceforge. net}, 2004.
+
+\end{thebibliography}
