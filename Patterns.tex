@@ -176,27 +176,31 @@ YR = 1941
 In each case YR is being assigned the substring of four characters from the first Len(4) or Move(4) functions.  Then after a blank space, MO is assigned the substring of four characters from the second Len(4) or Move(4) functions.  Finally after another blank space, Day is assigned the two letter substring from the Len(2) or move(2) functions.
 
 \pagebreak
-Span(c) will match any continuous set of characters in the cset c, for example:\\
+Span(c) will match any continuous set of characters in the cset c, Break(c) will match any contiuous set of characters upto a character that is a member of cset c, for example:\\
 
 \noindent
 SNOBOL4:
 \begin{verbatim}
 line = '1941 Dec. 07'
-line  SPAN('0123456789') . year
+line  SPAN('0123456789') $ year ' ' BREAK(' ') $ month
 \end{verbatim}
 
 \noindent
 Unicon Patterns:
 \begin{verbatim}
+pattern := Span(&digits) $$ year && " " && Break(' ') $$ month
 line := "1941 Dec. 07"
-line ?? Span(&digits) -> year
+line ?? pattern
 \end{verbatim}
 or
 \begin{verbatim}
 line := "1941 Dec. 07"
 pattern := Span(&digits)
+pattern2 := Break(' ')
 line ? {
-year := pattern
+year := =pattern
+move(1)
+month := =pattern2
 }
 \end{verbatim}
 
@@ -204,16 +208,22 @@ year := pattern
 Unicon Strings:
 \begin{verbatim}
 line := "1941 Dec. 07"
-line ? year := tab(many(&digits))
+line ? {
+year := tab(many(&digits))
+move(1)
+month := tab(many(~' ')
 \end{verbatim}
 
 \noindent
 result:
 \begin{verbatim}
 year = 1941
+month = Dec.
 \end{verbatim}
 
-In the first two cases the patterns will return the substring of the first set of digits it encounters, and the last two cases it will return the substring of digits at the beginning of the string, all of which are "1941".
+In the first two cases the patterns will return the substring of the first set of digits it encounters, and the last two cases it will the substring of digits at the beginning of the string, all of which are "1941".  After that they pass over the space and the Break() and tab(many()) functions assign "Dec." to month.
+
+\pagebreak
 
 
 \section{Implementation}
