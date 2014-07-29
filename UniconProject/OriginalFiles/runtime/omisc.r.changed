@@ -209,7 +209,6 @@ operator{*} = tabmat(x)
 				/*
 				 * Suspend sub-string that matches pattern.
 				 */
-		printf("oldpos: %d, StrLen: %d\n", oldpos, StrLen(k_subject) + 1);
 				suspend string(stop - start, StrLoc(k_subject)+ start);
 		
 				pattern_subject = StrLoc(k_subject);
