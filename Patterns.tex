@@ -54,17 +54,16 @@ Using the same Icon source code, Unicon was developed to include modern software
 
 \section{Design Considerations}
 
-There are several questions that had to be resolved on how patterns are to used in a Unicon program.  In what mode will a pattern matching statement be executed inside or outside the Unicon string scanning environment?  How the pattern operators and functions should appear in order to remain consistent with Unicon while being easily recognizable by those who are familiar with SNOBOL?  Can the pattern functions be executed in the same manner as similar string scanning functions and do they have similar functionality?
+To integrate pattern matching with Unicon string string scanning we have to consider how we would implement patterns in the string scanning environment and string scanning in the pattern matching operation.  The pattern functions and operators will have to be consistent lexically and functionally with the Unicon language.
 
 \subsection{Pattern matching statements}
-SNOBOL pattern matching can be executed in either anchored or non-anchored mode.  The anchored mode requires the match to start on the first character of the subject string while in the non-anchored mode the match can start at any location in the subject string.\cite{Snobol}  The question for integrating SNOBOL's pattern matching to the Unicon language was a question of which mode was appropriate when.
-
-Unicon string scanning environment uses an inductive method of executing a series of expressions to manipulate and analyze a subject string.  In this process the cursor location within the subject string is monitored and adjusted depending on the success or failure of each expression.  In order to maintain this systematic process in the string scanning environment, it was decided to execute the pattern matching operation in the anchored mode.  As for the non-anchored mode, its operation would remain as Gaikaiwari adapted patterns to the Unicon language, where it can be executed outside the string scanning environment.  
+SNOBOL pattern matching can be executed in either anchored or non-anchored mode.  The anchored mode requires the match to start on the first character of the subject string while in the non-anchored mode the match can start at any location in the subject string.\cite{Snobol}  The pattern matching operation adapted by Gaikaiwari are generators.\cite{Gaikaiwari2005}  They only produce one value, but since they suspend instead of return that value, the cursor position is stored.  This allows the the operation to produce the next value. \cite{JefferyUnicon}
 
 The pattern matching statement in SNOBOL4 and Gaikaiwari's Unicon implementation are in the following statements:\\
 
 \noindent
 SNOBOL4:
+\linespread{1}
 \begin{verbatim}
    SUBJECT  PATTERN
 \end{verbatim}
@@ -74,16 +73,23 @@ Unicon:
    subject ?? pattern
 \end{verbatim}
 
-In the above lines, the subject would be scanned to see if it contains the contents of the pattern, if it succeeds, then a substring of the subject that fits the pattern would be returned.  With the SNOBOL4 operation the pattern has to begin its match at the first character of the subject string in the anchored mode; in the non-anchored mode the pattern could start at any character in the string. \cite{Snobol}  The Unicon operation is in the non-anchored mode by default. \cite{Gaikaiwari2005}
+In the above lines, the subject would be scanned to see if it contains the contents of the pattern, if it succeeds, then a substring of the subject that fits the pattern would be returned.  In the anchored mode of the SNOBOL4 operation the pattern has to begin its match at the first character of the subject string; in the non-anchored mode the pattern could start at any character in the string. \cite{Snobol}  The Unicon operation is in the non-anchored mode by default. \cite{Gaikaiwari2005}
+
+To integrate pattern matching to the Unicon language we have to consider which mode is appropriate considering which environment it is in.  If it is being executed outside the Unicon string scanning environment, the cursor position or index of the string has not been established.  Therefore the non-anchored mode would be appropriate, but it the user wishes to have the pattern match run in the anchored mode, starting the pattern with Pos(1) would have the desired effect.
+
+\subsubsection{Patterns into String Scanning}
+Executing pattern matching from within the Unicon string scanning environment.  The \&pos is established and string scanning environment uses an inductive method of executing a series of expressions to manipulate and analyze a subject string.  The cursor location or index is adjusted depending on the success or failure of each expression.  In order to maintain this systematic process in the string scanning environment, it was decided to execute the pattern matching operation in the anchored mode.  
 
 The Unicon string scanning evironment is initialized in the following statement:
 
-\linespread{1}
 \begin{verbatim}
    subject ? expr
 \end{verbatim}
 
 The '?' operator sets the cursor location to the first position in the subject string and the function or the block of functions that are called in the expression are executed.  Each function moves the cursor upon success, for this reason, I propose if in the event that a pattern is encountered with the tabmat '=' operator, the pattern match be performed in the anchored mode, with the cursor being advanced to the end of the matching pattern if there is success.
+
+\subsubsection{String Scanning into Patterns}
+Given that string scanning functions require an index location, using them in the pattern matching operation will require the cursor location or index to be established prior to their execution.  Considering that the pattern matching operation in the non-anchored mode does not start from a fixed index location, it is established when a pattern is found.  Therefore, it will be necessary to set the mode of the pattern match to anchored and an index location be established when a pattern contains a string scanning function.
 
 \subsection{SNOBOL4 and Unicon pattern operators}
 The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thesis.  Although they are lexically different, they are functionally identical to SNOBOL4 pattern operators.  Gaikaiwari's operators for concatenation and alternation do not match either the Unicon operators.  The Unicon operators for concatenation and alternation should be modified to recognize whether the operator is a pattern or a standard operator.
@@ -140,8 +146,8 @@ In the Unicon string scanning environment the functions operate in relation to t
 
 \pagebreak
 \vspace{2 pc}
-\subsubsection{Pos, Rpos, Tab and Rtab}
-Pos, Rpos, Tab and Rtab functions all work directly with the cursor location.  In Unicon the cursor location value is the number of spaces to the right from the left end of string with the first position being 1 or the number of spaces subtracted from the right end of the string.   The illustration below demonstrates the cursor position values for the string "Unicon" with the vertical bars representing the cursor locations:
+\subsubsection{Index Related Functions}
+Pos, Rpos, Tab and Rtab functions all work directly with the cursor location or index.  In Unicon the index value is the number of spaces to the right from the left end of string with the first position being 1 or the number of spaces subtracted from the right end of the string.\cite{JefferyUnicon}   The illustration below demonstrates the cursor position values for the string "Unicon" with the vertical bars representing the index locations:
 
 \begin{verbatim}
    -6  -5  -4  -3  -2  -1  0
@@ -157,15 +163,20 @@ With the Rpos and Rtab functions the cursor locations are as follows:
 \end{verbatim}
 
 \vspace{2 pc}
-\subsubsection{Back and Cancel}
-Fail is a already taken as a keyword in Unicon.  Attempts to use this name created a lot problems in compiling Unicon.  Fail in Unicon means that there is no result in the operation, while with pattern matching it is used to signify that there is no result in the current position in the evaluation and to backtrack to try another alternative.  Since the function is localized to the pattern match operation and is not intended for a failure of the entire operation, I proposed to use Back() for the SNOBOL4 FAIL function.
+\subsubsection{Backtracking and Terminating Functions}
+Fail is a already taken as a keyword in Unicon.  Attempts to use this name created a lot problems in compiling Unicon.  Fail in Unicon means that there is not a successful result in the operation.  While performing the pattern matching operation, FAIL is used to signify that there is not a successful result in the current pattern element and instructs the system to backtrack and to try another alternative.  Since the function is localized to a pattern match element and is not intended for a failure of the entire operation, I proposed to use Back() for the SNOBOL4 FAIL function.
+
+Likewise ABORT is a SNOBOL function that cancels the pattern matching operation, but does not the operation entire program.  Cancel would be a more appropriate term for the ABORT function. 
 
 \section{Implementation}
 To implement these changes the following changes to the Unicon language had to be made:
 \begin{itemize}
 \item Modify Unicon's runtime to execute pattern matching in the anchored mode when it is executed in the tabmat operator in the string scanning environment.
-\item Modify function definitions for the Unicon build.
+\item Modify the pattern matching operation to recognize string scanning functions.
+\item Add pattern scan to identify its contents and determine the pattern matching mode.
 \item Modify the pattern source files to address the functional changes for Pos and Tab.
+\item Modify function definitions for the Unicon build.
+\item Modify the concatenation and alternation operators to function with patterns.
 \end{itemize}
 
 \subsection{Pattern matching statements}
@@ -175,9 +186,10 @@ The non-anchored pattern matching operation was resolved by Sudarshan Gaikaiwari
    subject ?? pattern
 \end{verbatim}
 
-The anchored pattern matching operation was defined in the pattern resources, but not implemented.  It was decided that integrating the pattern matching system into the Unicon string scanning environment.  Since the analysis of a string was in progress and the string scanning environment studiously tracks the cursor position as it progresses, it was decided that pattern matching operation would be executed in the anchored mode.
+\subsubsection{Anchored mode from string scanning}
+The anchored pattern matching operation was defined in the pattern resources, but not implemented.  It was decided that integrating the pattern matching system into the Unicon string scanning environment.  Since the analysis of a string was in progress and the string scanning environment tracks the cursor or index position as it progresses, it was decided that pattern matching operation would be executed in the anchored mode.
 
-The Unicon tabmat operator '=' was determined to be an ideal choice.  The use of an equals '=' before a pattern variable triggers the anchored mode pattern matching operation, as shown in the previous examples in Section 3.3.
+The Unicon tabmat operator '=' was determined to be an ideal choice.  The use of an equals '=' before a pattern variable triggers the anchored mode pattern matching operation.
 
 The tabmat operator was modified to accept pattern data types.  The argument data type test section was modified as follows: 
 
