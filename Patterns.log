@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.6.16)  29 JUL 2014 16:00
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.6.16)  30 JUL 2014 17:06
 entering extended mode
 **Patterns.tex
 (C:\Users\John\Documents\GitHub\UniconProject\Patterns.tex
@@ -89,112 +89,47 @@ LaTeX Font Info:    External font `cmex10' loaded for size
  [1
 
 {C:/Users/John/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
-Underfull \hbox (badness 10000) in paragraph at lines 54--55
-
- []
-
-[2]
+(C:\Users\John\Documents\GitHub\UniconProject\Patterns.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 84.
+(Font)              <7> on input line 4.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 84.
- [3]
-Underfull \hbox (badness 10000) in paragraph at lines 131--132
-
- []
-
-
-Overfull \hbox (32.9967pt too wide) in paragraph at lines 147--147
-[]   \OT1/cmtt/m/n/10 infamy := Len(4) $$ YR && " " && Len(4) $$ MO && " " && L
-en(2) $$ DAY[] 
- []
-
-
-Overfull \hbox (32.9967pt too wide) in paragraph at lines 156--156
-[]   \OT1/cmtt/m/n/10 infamy := Len(4) $$ YR && " " && Len(4) $$ MO && " " && L
-en(2) $$ DAY[] 
- []
-
-[4]
-Underfull \hbox (badness 10000) in paragraph at lines 183--184
-
- []
-
-
-Overfull \hbox (1.49698pt too wide) in paragraph at lines 190--190
-[]   \OT1/cmtt/m/n/10 subjectString  SPAN('0123456789') $ year ' ' BREAK(' ') $
- month[] 
- []
-
+(Font)              <5> on input line 4.
+)
+\tf@toc=\write3
+ [2] [3] [4]
 [5]
-Underfull \hbox (badness 10000) in paragraph at lines 234--235
+Underfull \hbox (badness 10000) in paragraph at lines 64--65
 
  []
 
-[6]
-Underfull \hbox (badness 10000) in paragraph at lines 290--291
-
+[6] [7] [8] [9]
+Overfull \hbox (3.4312pt too wide) in paragraph at lines 160--161
+\OT1/cmr/m/n/10 The non-anchored pat-tern match-ing op-er-a-tion was re-solved 
+by Su-dar-shan Gaikai-
  []
 
-[7]
-Underfull \hbox (badness 10000) in paragraph at lines 338--339
-
- []
-
-[8]
-Underfull \hbox (badness 10000) in paragraph at lines 387--388
-
+[10] [11]
+Overfull \hbox (11.99689pt too wide) in paragraph at lines 262--262
+[]\OT1/cmtt/m/n/10 if (internal_match(pattern_subject, subject_len, pattern->st
+ck_size,[] 
  []
 
 
-Overfull \hbox (27.74675pt too wide) in paragraph at lines 403--403
-[]   \OT1/cmtt/m/n/10 pattern := (Any(' ') && Arb() && "o") $$ result1 && Rem()
- $$ result2[] 
- []
-
-[9]
-Underfull \hbox (badness 10000) in paragraph at lines 437--438
-
- []
-
-[10]
-Underfull \hbox (badness 10000) in paragraph at lines 473--475
-
- []
-
-
-Overfull \hbox (27.74675pt too wide) in paragraph at lines 490--490
-[]   \OT1/cmtt/m/n/10 pattern := (Any(' ') && Arb() && "o") $$ result1 && Rem()
- $$ result2[] 
- []
-
-[11]
-Overfull \hbox (6.97327pt too wide) in paragraph at lines 524--526
-\OT1/cmr/m/n/10 ***************************************************************
-** Arb()
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 524--526
-
- []
-
-
-Overfull \hbox (27.74675pt too wide) in paragraph at lines 541--541
-[]   \OT1/cmtt/m/n/10 pattern := (Any(' ') && Arb() && "o") $$ result1 && Rem()
- $$ result2[] 
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 262--262
+[]\OT1/cmtt/m/n/10 printf("oldpos: %d, StrLen: %d\n", oldpos, StrLen(k_subject)
+ + 1);[] 
  []
 
 [12] [13] (C:\Users\John\Documents\GitHub\UniconProject\Patterns.bbl) [14]
 (C:\Users\John\Documents\GitHub\UniconProject\Patterns.aux) ) 
 Here is how much of TeX's memory you used:
- 917 strings out of 493921
- 12013 string characters out of 3146483
- 68587 words of memory out of 3000000
- 4247 multiletter control sequences out of 15000+200000
+ 921 strings out of 493921
+ 12149 string characters out of 3146483
+ 66614 words of memory out of 3000000
+ 4248 multiletter control sequences out of 15000+200000
  9016 words of font info for 32 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 27i,8n,21p,805b,245s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,8n,21p,1110b,251s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files 
 (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program Files (x86)/
 MikTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files (x86)/MikTeX
@@ -203,11 +138,12 @@ type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/
 public/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/
 amsfonts/cm/cmr12.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfont
 s/cm/cmr17.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cm
-sy10.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmti10.p
-fb><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on Patterns.pdf (14 pages, 165289 bytes).
+r9.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb
+><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/P
+rogram Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on Patterns.pdf (14 pages, 177298 bytes).
 PDF statistics:
- 88 PDF objects out of 1000 (max. 8388607)
+ 92 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

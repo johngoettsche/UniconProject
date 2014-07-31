@@ -4,7 +4,7 @@
 %\usepackage{fullpage}
 %\usepackage{setspace}
 %\doublespacing
-
+\linespread{2}
 \usepackage{cite}
 
 \usepackage[pdftex]{graphicx}
@@ -24,11 +24,17 @@
 
 \maketitle
 
-\begin{abstract}
 
+
+\begin{abstract}
+The SNOBOL4 pattern data type and the pattern matching process were to the Unicon language in 2005, but was not fully integrated with the Unicon string scanning environment.  Modest changes were made to the pattern matching functions and the pattern data type was made accessible to the Unicon string scanning environment.  A Unicon string scanning operator was changed to to execute a pattern match in the anchored mode in order to preserve the logic of the string scanning operation. 
 
 \end{abstract}
 
+\pagebreak
+\tableofcontents
+
+\pagebreak
 \section{Introduction}
 In order to enhance their productivity in scanning and analyzing strings, string scanning and pattern matching systems have been developed.  Modern highlevel languages tend to offer reqular expressions and context free grammars for their string processing.  Analysis of strings often require functionality beyond what these classes of languages offer.  SNOBOL4 was the most successful of the early string processing languages.\cite{Gaikaiwari2005}  The pattern data type was imployed in SNOBOL4 along with pattern operators and functions to perform the analysis.
 
@@ -40,17 +46,21 @@ This paper briefly explores the background of SNOBOL4 patterns and Unicon string
 
 \section{Background}
 
-SNOBOL4 was developed by Bell Telephone Laboratories in 1962.  Searching for a desired pattern within a string of characters is one of its basic operations.  Patterns could be as simple as a single character or a set of characters in a particular order, or it can be a complex arrangement with alternative character sets and pattern function.  The pattern data type was used enabling the user to define and store patterns as variables to be used later when they were desired.\cite{Snobol}
+SNOBOL was developed by David Farber, Ralph Griswald and Ivan Polonsky at Bell Telephone Laboratories in 1962.  SNOBOL4 was developed in 1967 and had many of the features that are included in popular dynamic programming languages including dynamic typing, eval and garbage collection.  Its pattern data type was its most important contribution to string processing.  Patterns could be as simple as a single character or a set of characters in a particular order, or it can be a complex arrangement with alternative character sets and pattern function.  The pattern data type was used enabling the user to define and store patterns as variables to be used later when they were desired.\cite{Snobol}  
 
-One of the developers of SNOBOL4, Ralph Griswold, went to the University of Arizona and developed the Icon programming language which was more readable and simpler to use.\cite{JefferyUnicon}  Unlike most other languages Icon considers the string as a data type in its own right, rather that a set of characters. \cite{GriswoldIcon}  The string scanning environment allows the user to execute a variety of string functions to search for sub-strings or patterns.
+One of the developers of SNOBOL4, Ralph Griswold, went to the University of Arizona and developed the Icon programming language which was more readable and simpler to use.\cite{JefferyUnicon}  Icon examined SNOBOL4's generators and backtracking in its pattern matching to develop and implement goal directed evaluation.\cite{Gaikaiwari2005}  SNOBOL4 patterns were not incorporated in Icon, instead Griswald developed an extensive string scanning system where a veritey of functions and operations are executed in order to analyze and manipulate a subject string as a cursor advances through that string.  Unlike most other languages Icon considers the string as a data type in its own right, rather that a set of characters. \cite{GriswoldIcon}  
 
-Using the same Icon source code, Unicon was developed to include modern software features such as objects, networks and databases. \cite{JefferyUnicon} The string scanning environment of Icon is a part of the Unicon programming language.  Master's student, Sudarshan Gaikaiwari proposed adopting SNOBOL4 patterns to the Unicon language.  In his thesis, he added the pattern data type, and provided pattern matching functions to execute the pattern searches.\cite{Gaikaiwari2005}  The pattern data type was kept separate from the string scanning environment.  This paper proposes the pattern matching proposed by Gaikaiwari be refined to be more naturally incorporated in the Unicon language with the string scanning environment implement the pattern matching functionality.
+Using the same Icon source code, Unicon was developed to include modern software features such as objects, networks and databases. \cite{JefferyUnicon} The string scanning environment of Icon is a part of the Unicon programming language.  Master's student, Sudarshan Gaikaiwari proposed adopting SNOBOL patterns to the Unicon language.  In his thesis, he added the pattern data type, and provided pattern matching functions and operators to execute the pattern searches.\cite{Gaikaiwari2005}  The pattern data type was kept separate from the string scanning environment which may not execute pattern matching operations.  These pattern matching operations are not integrated into the string scanning environment.  This paper proposes the pattern matching proposed by Gaikaiwari be refined to be more naturally incorporated in the Unicon language with the string scanning environment implement the pattern matching functionality.
 
 \section{Design Considerations}
 
-
+There are several questions that had to be resolved on how patterns are to used and executed in a Unicon program.  What it means to execute a pattern matching statement inside and outside the Unicon string scanning environment and were are each of the pattern matching modes appropriate?  How the pattern operators and functions should appear in order to remain consistent with Unicon while being easily recognizable by those who are familiar with SNOBOL?  Can the pattern functions be executed in the same manner as similar string scanning functions and do they have similar functionality?
 
 \subsection{Pattern matching statements}
+SNOBOL pattern matching can be executed in either anchored or non-anchored mode.  The anchored mode requires the match to start on the first character of the subject string while in the non-anchored mode the match can start at any location in the subject string.\cite{Snobol}  The question for integrating SNOBOL's pattern matching to the Unicon language was a question of which mode was appropriate when.
+
+Unicon string scanning environment uses an inductive method of executing a series of expressions to manipulate and analyze a subject string.  In this process the cursor location within the subject string is monitored and adjusted depending on the success or failure of each expression.  In order to maintain this systematic process in the string scanning environment, it was decided to execute the pattern matching operation in the anchored mode.  As for the non-anchored mode, its operation would remain as Gaikaiwari adapted patterns to the Unicon language, where it can be executed outside the string scanning environment.  
+
 The pattern matching statement in SNOBOL4 and Gaikaiwari's Unicon implementation are in the following statements:\\
 
 \noindent
@@ -68,6 +78,7 @@ In the above lines, the subject would be scanned to see if it contains the conte
 
 The Unicon string scanning evironment is initialized in the following statement:
 
+\linespread{1}
 \begin{verbatim}
 subject ? expr
 \end{verbatim}
@@ -81,526 +92,118 @@ The '?' operator sets the cursor location to the first position in the subject s
 \begin{table}[ht]
 	\caption{Pattern Operators}
 	\centering
-	\begin{tabular}{|l|l|l|}
+	\begin{tabular}{|l|l|l|l|}
 		\hline\hline
-		Operation & SNOBOL4 & Unicon \\
+		Operation & SNOBOL4 & Gaikaiwari \\
 		\hline
-		Concatenation & implicit & $||$ \\
+		Concatenation & *implicit* & \&\& \\
 		Alternation & $|$ & $.|$ \\
+		\hline
 		Immediate Assignment & \$ & \$\$ \\
 		Conditional Assignment & . & $->$ \\
 		Cursor Assignment & @ & .\$ \\
+		\hline
 		Unevaluated Expression & $*$x & `x` \\
 		\hline
 	\end{tabular}
 \end{table}
-
+\pagebreak
 \subsection{SNOBOL4 and Unicon pattern functions}
 
-The table below shows the SNOBOL4 primitive functions and the recommended Unicon pattern functions.  In most cases it is recommended that the function be lexically similar with the first character being capitalized and the following letters in lower-case, with a couple of exceptions for FAIL and ABORT.  Fail appears to be already used in Unicon, therefore PFail is being recommended to represent Pattern Fail.  Abort is being changed to Cancel to represent the cancellation of the entire matching operation.  This results in the following set of Unicon pattern functions in comparison to their original SNOBOL4 pattern functions:
+In the Unicon string scanning environment the functions operate in relation to the cursor position of the subject string.  It is a inductive process where the data is analyzed by injecting the functions into the subject string.  While the patterns are pre-defined and are used deductively to search a subject string for the pattern.  In the pattern matching operation many of the functions operate independently of the cursor location and later determining a new cursor location to as a part of determining the results of the pattern match.  This difference lead the author to conclude that the SNOBOL pattern function names should be retained as much as possible while altering to fit a Unicon naming conventions.  The table below shows the SNOBOL4 primitive functions and the recommended Unicon pattern functions.  In most cases it is recommended that the function be lexically similar with the first character being capitalized and the following letters in lower-case, with a couple of exceptions for FAIL and ABORT.  Other changes are described in the example uses of the functions bellow: 
 
 \begin{table}[ht]
 	\caption{Pattern Functions}
 	\centering
-	\begin{tabular}{|l|l|l|}
+	\begin{tabular}{|l|l|}
 		\hline\hline
-		SNOBOL4 & Gaikaiwari & Unicon \\
+		SNOBOL4 & Proposed \\
 		\hline
-		LEN(n) & PLen(n) & Len(n) \\
-		SPAN(c) & PSpan(c) & Span(c)  \\
-		BREAK(c) & PBreak(c) & Break(c) \\
-		ANY(c) & PAny(c) & Any(c) \\
-		NOTANY(c) & PNotAny(c) & NotAny(c) \\
-		TAB(n) & PTab(n) & Tab(n) \\
-		RTAB(n) & PRtab(n) & Rtab(n) \\
-		REM & PRest() & Rem() \\
-		POS(n) & PPos(n) & Pos(n)  \\
-		RPOS(n) &PRpos(n) & Rpos(n)  \\
-		FAIL & PFail() &PFail() \\
-		FENCE &PFence() & Fence() \\
-		ABORT &PAbort() & Cancel() \\
-		ARB & PArb() & Arb() \\
-		ARBNO(p) & PArbno(p) & Arbno(p) \\
-		BAL & PBal() & Bal() \\
+		LEN(n) & Len(n) \\
+		SPAN(c) & Span(c)  \\
+		BREAK(c) & Break(c) \\
+		ANY(c) & Any(c) \\
+		NOTANY(c) & NotAny(c) \\
+		TAB(n) & Tab(n) \\
+		RTAB(n) & Rtab(n) \\
+		REM & Rem() \\
+		POS(n) & Pos(n)  \\
+		RPOS(n) & Rpos(n)  \\
+		FAIL & Back() \\
+		FENCE & Fence() \\
+		ABORT & Cancel() \\
+		ARB & Arb() \\
+		ARBNO(p) & Arbno(p) \\
+		BAL & Bal() \\
 		\hline
 	\end{tabular}
 \end{table}
 
 \pagebreak
-\subsubsection{Len}
-Len(n) function matches a string of characters of n length beginning from the current cursor position.  Unicon string scanning uses move(n) for a similar result where the substring of characters of n length are matched from the current cursor position.  In non-anchored pattern matching mode, the location of the cursor is not fixed, therefore Len(n) is more appropriate as the substring location has yet to be determined.  Some examples are as follows: \\
+\vspace{2 pc}
+\subsubsection{Pos, Rpos, Tab and Rtab}
+Pos, Rpos, Tab and Rtab functions all work directly with the cursor location.  In Unicon the cursor location value is the number of spaces to the right from the left end of string with the first position being 1 or the number of spaces subtracted from the right end of the string.   The illustration below demonstrates the cursor position values for the string "Unicon" with the vertical bars representing the cursor locations:
 
-\noindent
-SNOBOL4:
 \begin{verbatim}
-   subString = '1941 Dec. 07' 
-   infamy = LEN(4) . YR ' ' LEN(4) . MO ' ' LEN(2) . DAY 
-   subjectString  infamy 
+   -6  -5  -4  -3  -2  -1  0
+   | U | n | i | c | o | n |
+   1   2   3   4   5   6   7
 \end{verbatim}
 
-\noindent
-Unicon Patterns (non-anchored mode):
-\begin{verbatim}
-   subjectString := "1941 Dec. 07"
-   infamy := Len(4) $$ YR && " " && Len(4) $$ MO && " " && Len(2) $$ DAY 
-   subjectString ?? infamy
-\end{verbatim}
-\noindent
-Unicon Patterns (anchored mode):
-\begin{verbatim}
-   subjectString := "1941 Dec. 07"
-   infamy := Len(4) $$ YR && " " && Len(4) $$ MO && " " && Len(2) $$ DAY 
-   subjectString ? {
-      =infamy
-   }
-\end{verbatim}
+With the Rpos and Rtab functions the cursor locations are as follows:
 
-\noindent
-Unicon string scanning:
 \begin{verbatim}
-   subjectString := "1941 Dec. 07"
-   subjectString ? {
-      YR := move(4)
-      move(1)
-      MO := move(4)
-      move(1)
-      DAY := move(2)
-   }
+   6   5   4   3   2   1   0
+   | U | n | i | c | o | n |
 \end{verbatim}
-
-\noindent
-result:
-\begin{verbatim}
-   MO = Dec.
-   DAY = 07
-   YR = 1941
-\end{verbatim}
-
-In each case YR is being assigned the subject string of four characters from the first Len(4) or Move(4) functions.  Then after a blank space, MO is assigned the subject string of four characters from the second Len(4) or Move(4) functions.  Finally after another blank space, Day is assigned the two letter subject string from the Len(2) or move(2) functions.
 
 \vspace{2 pc}
-\subsubsection{Span and Break}
-Span(c) will match any continuous set of characters in the cset c, Break(c) will match any continuous set of characters upto a character that is a member of cset c.  Unicon string scanning accomplishes this with the combination of the tab() and many(c) functions. Some examples are as follows: \\
+\subsubsection{Back and Cancel}
+Fail is a already taken as a keyword in Unicon.  Attempts to use this name created a lot problems in compiling Unicon.  Fail in Unicon means that there is no result in the operation, while with pattern matching it is used to signify that there is no result in the current position in the evaluation and to backtrack to try another alternative.  Since the function is localized to the pattern match operation and is not intended for a failure of the entire operation, I proposed to use Back() for the SNOBOL4 FAIL function.
 
-\noindent
-SNOBOL4:
-\begin{verbatim}
-   subjectString = '1941 Dec. 07'
-   subjectString  SPAN('0123456789') $ year ' ' BREAK(' ') $ month
-\end{verbatim}
-
-\noindent
-Unicon Patterns (non-anchored mode):
-\begin{verbatim}
-   pattern := Span(&digits) $$ year && " " && Break(' ') $$ month
-   subjectString := "1941 Dec. 07"
-   subjectString ?? pattern
-\end{verbatim}
-\noindent
-Unicon Patterns (anchored mode):
-\begin{verbatim}
-   subjectString := "1941 Dec. 07"
-   pattern := Span(&digits)
-   pattern2 := Break(' ')
-   subjectString ? {
-      year := =pattern
-      move(1)
-      month := =pattern2
-   }
-\end{verbatim}
-
-\noindent
-Unicon Strings:
-\begin{verbatim}
-   subjectString := "1941 Dec. 07"
-   subjectString ? {
-      year := tab(many(&digits))
-      move(1)
-      month := tab(many(~' '))
-   }
-\end{verbatim}
-
-\noindent
-result:
-\begin{verbatim}
-   year = 1941
-   month = Dec.
-\end{verbatim}
-
-In the first two cases the patterns will return the subject string of the first set of digits it encounters, and the last two cases it will the subject string of digits at the beginning of the string, all of which are "1941".  After that they pass over the space and the Break() and tab(many()) functions assign "Dec." to month.
-
-\vspace{2 pc}
-\subsubsection{Any and NotAny}
-Any(c) will match a single character in the subject string that is a member of cset c, NotAny(c) will match a single character in the subject string that is not a member of cset c.  In Unicon string scanning a similar result can be accomplished with the combination of the tab() and upto(c) functions followed by move(1). Some examples are as follows: \\
-
-\noindent
-SNOBOL4:
-\begin{verbatim}
-   vowels = 'aeiou'
-   pattern = (ANY(vowels) NOTANY(vowels)) . result
-   subjectString = 'bought'
-   subjectString  pattern
-\end{verbatim}
-
-\noindent
-Unicon Patterns (non-anchored mode):
-\begin{verbatim}
-   vowels := 'aeiou'
-   pattern := (Any(vowels) && NotAny(vowels)) -> result
-   subjectString := "bought"
-   subjectString ?? pattern
-\end{verbatim}
-\noindent
-Unicon Patterns (anchored mode):
-\begin{verbatim}
-   vowels := 'aeiou'
-   pattern := Any(vowels) && NotAny(vowels)
-   subjectString := "bought"
-   subjectString ? {
-      tab(upto(vowels))
-      tab(upto(~vowels))
-      &pos := &pos - 1
-      result := =pattern
-   }
-\end{verbatim}
-
-\noindent
-Unicon String Scanning:
-\begin{verbatim}
-   vowels := 'aeiou'
-   subjectString := "bought"
-   subjectString ? {
-      tab(upto(vowels))
-      tab(upto(~vowels))
-      &pos := &pos - 1
-      result := move(2)
-   }
-\end{verbatim}
-
-\noindent
-result:
-\begin{verbatim}
-   result = ug
-\end{verbatim}
-
-In the first two examples the patterns are in non-anchored mode and will scan the subject string until it finds a match of the pattern, being a vowel followed by a non-vowel.  In the third example the pattern match is performed in the anchored mode.  Without first moving the cursor forward with the string scanning functions, the match will fail as 'b' is not a vowel.  In the third and fourth examples some code was added to move the cursor to the location so that the result will match the first two.
-
-\vspace{2 pc}
-\subsubsection{Pos and Rpos}
-Pos(n) and Rpos(n) are primitive pattern functions which set the cursor position.  Pos(n) sets the position from the left end of the subject string with the first position being 1 and Rpos(n) sets the cursor position from the right end of the subject string with the last position being 0.\\
-
-\noindent
-SNOBOL4:
-\begin{verbatim}
-   pattern = (POS(3) LEN(4)) . result
-   subjectString = 'Unicon Programming'
-   subjectString  pattern
-\end{verbatim}
-
-\noindent
-Unicon Patterns (non-anchored mode):
-\begin{verbatim}
-   pattern := (Pos(3) && Len(4)) -> result
-   subjectString := "Unicon Programming"
-   subjectString ?? pattern
-\end{verbatim}
-\noindent
-Unicon Patterns (anchored mode):
-\begin{verbatim}
-   pattern := Len(4)
-   subjectString := "Unicon Programming"
-   subjectString ? {
-      &pos := 3
-      result := =pattern
-   }
-\end{verbatim}
-
-\noindent
-Unicon String Scanning:
-\begin{verbatim}
-   subjectString := "Unicon Programming"
-   subjectString ? {
-      &pos := 3
-      result := move(4)
-   }
-\end{verbatim}
-
-\noindent
-result:
-\begin{verbatim}
-   result = icon
-\end{verbatim}
-
-In all four of the examples the operation starts by moving the cursor to the third cursor position from the left of the subject string, then it matches the next four characters of the subject string, resulting in "icon".
-
-\vspace{2 pc}
-\subsubsection{Tab and Rtab}
-Tab(n) and Rtab(n) are primitive pattern functions that will match all characters in the subject string from the current cursor position to the nth cursor position.  The string scanning function tab(n) has the same functionality, but when there is a negative value for n then it the functionality of Rtab(n).\\
-
-\noindent
-SNOBOL4:
-\begin{verbatim}
-   pattern = (POS(3) TAB(7) RTAB(4)) . result
-   subjectString = 'Unicon Programming'
-   subjectString  pattern
-\end{verbatim}
-
-\noindent
-Unicon Patterns (non-anchored mode):
-\begin{verbatim}
-   pattern := (Pos(3) && Tab(7) && Rtab(4)) -> result
-   subjectString := "Unicon Programming"
-   subjectString ?? pattern
-\end{verbatim}
-\noindent
-Unicon Patterns (anchored mode):
-\begin{verbatim}
-   pattern := Tab(7) && Rtab(4)
-   subjectString := "Unicon Programming"
-   subjectString ? {
-      &pos := 3
-      result := =pattern
-   }
-\end{verbatim}
-
-\noindent
-Unicon String Scanning:
-\begin{verbatim}
-   subjectString := "Unicon Programming"
-   subjectString ? {
-      &pos := 3
-      result := tab(7)
-      result +:= tab(-4)
-   }
-\end{verbatim}
-
-\noindent
-result:
-\begin{verbatim}
-   result = icon Program
-\end{verbatim}
-
-In all four of the examples the operation starts by moving the cursor to the third cursor position from the left of the subject string, then it matches the substring upto cursor position 7 resulting in "icon."  Then it matches the substring from cursor position 7 to the cursor position which is 4 positions from the right and adding it the previous match, resulting in "icon Program".
-
-\vspace{2 pc}
-\subsubsection{Arb and Rem}
-Arb() is a primitive pattern function that will match an arbitrary number of characters in the subject string bounded by the cursor positions of the patterns on the right and left of the expression.  Rem() is a primitive pattern function that will match all the characters of the subject string from the current position to the end of the subject string.\\
-
-\noindent
-SNOBOL4:
-\begin{verbatim}
-   pattern = (ANY(' ') ARB  'o') $ result1 REM $ result2
-   subjectString = 'Unicon Programming'
-   subjectString  pattern
-\end{verbatim}
-
-\noindent
-Unicon Patterns (non-anchored mode):
-\begin{verbatim}
-   pattern := (Any(' ') && Arb() && "o") $$ result1 && Rem() $$ result2
-   subjectString := "Unicon Programming"
-   subjectString ?? pattern
-\end{verbatim}
-\noindent
-Unicon Patterns (anchored mode):
-\begin{verbatim}
-   pattern := (Arb() && "o") $$ result1 && Rem() $$ result2
-   subjectString := "Unicon Programming"
-   subjectString ? {
-      tab(upto(' '))
-      result := =pattern
-   }
-\end{verbatim}
-
-\noindent
-Unicon String Scanning:
-\begin{verbatim}
-   subjectString := "Unicon Programming"
-   subjectString ? {
-      tab(upto(' '))
-      result1 := tab(upto('o')) || move(1)
-      result2 := tab(0)
-   }
-\end{verbatim}
-
-\noindent
-result:
-\begin{verbatim}
-   result1 =  Pro
-   result2 = gramming
-\end{verbatim}
-
-In all four of the examples the operation starts by moving the cursor to the position just before the space.  Then result1 is assigned ' Pro' with the Arb() function in the first three examples or tab(upto('o')) || move(1) set of functions for the fourth example.
-
-\vspace{2 pc}
-\subsubsection{Bal}
-Bal() is a primitive pattern function that will match any non-null string that is balanced with parentheses.  The Unicon string scanning bal() has several arguments and returns the cursor position at which the string is balanced in regards to the character in the arguments.\\
-
-\noindent
-SNOBOL4:
-\begin{verbatim}
-   pattern = BAL
-   subjectString = '(3+5)*2'
-   subjectString  pattern
-\end{verbatim}
-
-\noindent
-Unicon Patterns (non-anchored mode):
-\begin{verbatim}
-   pattern := Bal() -> result
-   subjectString := "(3+5)*2"
-   subjectString ?? pattern
-\end{verbatim}
-\noindent
-Unicon Patterns (anchored mode):
-\begin{verbatim}
-   pattern := Bal()
-   subjectString := "(3+5)*2"
-   subjectString ? {
-      result := =pattern
-   }
-\end{verbatim}
-
-\noindent
-result:
-\begin{verbatim}
-   result = (3+5)
-\end{verbatim}
-In these examples the Bal function locates the beginning parenthesis and then matches the everything until it reaches the closing parenthesis in which the opening and closing parentheses are balanced.  If the function begins at a non parentheses then it will return that character as it is a set with a parentheses depth of 0.
-
-\vspace{2 pc}
-\subsubsection{Breakx and Arbno}
-******************************************************
-Arb() is a primitive pattern function that will match an arbitrary number of characters in the subject string bounded by the cursor positions of the patterns on the right and left of the expression.  Rem() is a primitive pattern function that will match all the characters of the subject string from the current position to the end of the subject string.\\
-
-\noindent
-SNOBOL4:
-\begin{verbatim}
-   pattern = (ANY(' ') ARB  'o') $ result1 REM $ result2
-   subjectString = 'Unicon Programming'
-   subjectString  pattern
-\end{verbatim}
-
-\noindent
-Unicon Patterns (non-anchored mode):
-\begin{verbatim}
-   pattern := (Any(' ') && Arb() && "o") $$ result1 && Rem() $$ result2
-   subjectString := "Unicon Programming"
-   subjectString ?? pattern
-\end{verbatim}
-\noindent
-Unicon Patterns (anchored mode):
-\begin{verbatim}
-   pattern := (Arb() && "o") $$ result1 && Rem() $$ result2
-   subjectString := "Unicon Programming"
-   subjectString ? {
-      tab(upto(' '))
-      result := =pattern
-   }
-\end{verbatim}
-
-\noindent
-Unicon String Scanning:
-\begin{verbatim}
-   subjectString := "Unicon Programming"
-   subjectString ? {
-      tab(upto(' '))
-      result1 := tab(upto('o')) || move(1)
-      result2 := tab(0)
-   }
-\end{verbatim}
-
-\noindent
-result:
-\begin{verbatim}
-   result1 =  Pro
-   result2 = gramming
-\end{verbatim}
-
-In all four of the examples the operation starts by moving the cursor to the position just before the space.  Then result1 is assigned ' Pro' with the Arb() function in the first three examples or tab(upto('o')) || move(1) set of functions for the fourth example.
-
-\vspace{2 pc}
-\subsubsection{Fail, Fence and Cancel}
-*****************************************************************
-Arb() is a primitive pattern function that will match an arbitrary number of characters in the subject string bounded by the cursor positions of the patterns on the right and left of the expression.  Rem() is a primitive pattern function that will match all the characters of the subject string from the current position to the end of the subject string.\\
-
-\noindent
-SNOBOL4:
-\begin{verbatim}
-   pattern = (ANY(' ') ARB  'o') $ result1 REM $ result2
-   subjectString = 'Unicon Programming'
-   subjectString  pattern
-\end{verbatim}
-
-\noindent
-Unicon Patterns (non-anchored mode):
-\begin{verbatim}
-   pattern := (Any(' ') && Arb() && "o") $$ result1 && Rem() $$ result2
-   subjectString := "Unicon Programming"
-   subjectString ?? pattern
-\end{verbatim}
-\noindent
-Unicon Patterns (anchored mode):
-\begin{verbatim}
-   pattern := (Arb() && "o") $$ result1 && Rem() $$ result2
-   subjectString := "Unicon Programming"
-   subjectString ? {
-      tab(upto(' '))
-      result := =pattern
-   }
-\end{verbatim}
-
-\noindent
-Unicon String Scanning:
-\begin{verbatim}
-   subjectString := "Unicon Programming"
-   subjectString ? {
-      tab(upto(' '))
-      result1 := tab(upto('o')) || move(1)
-      result2 := tab(0)
-   }
-\end{verbatim}
-
-\noindent
-result:
-\begin{verbatim}
-   result1 =  Pro
-   result2 = gramming
-\end{verbatim}
-
-In all four of the examples the operation starts by moving the cursor to the position just before the space.  Then result1 is assigned ' Pro' with the Arb() function in the first three examples or tab(upto('o')) || move(1) set of functions for the fourth example.
 \section{Implementation}
 
 \subsection{Pattern matching statements}
-The non-anchored pattern matching operation was resolved by Sudarshan Gaikaiwari in his 2005 Master's theses at New Mexico State University.  
+The non-anchored pattern matching operation was resolved by Sudarshan Gaikaiwari in his 2005 Master's theses at New Mexico State University.  A non-anchored pattern matching expression consists of a subject followed by the comparison operator '??' followed by a pattern and appears as follows:
+
+\begin{verbatim}
+   subject ?? pattern
+\end{verbatim}
 
 The anchored pattern matching operation was defined in the pattern resources, but not implemented.  It was decided that integrating the pattern matching system into the Unicon string scanning environment.  Since the analysis of a string was in progress and the string scanning environment studiously tracks the cursor position as it progresses, it was decided that pattern matching operation would be executed in the anchored mode.
 
 The Unicon tabmat operator '=' was determined to be an ideal choice.  The use of an equals '=' before a pattern variable triggers the anchored mode pattern matching operation, as shown in the previous examples in Section 3.3.
 
-The tabmat operator had to be modified to accept pattern data types.  In the 
+The tabmat operator was modified to accept pattern data types.  The argument data type test section was modified as follows: 
+
+
 \begin{verbatim}
-operator{*} = tabmat(x)
-	declare {
-      int use_trap = 0;
-   }
+   operator{*} = tabmat(x)
+      declare {
+         int use_trap = 0;
+      }
    /*
     * x must be a pattern or convertible into a string.
     */
-	if is:pattern(x) then {
-		inline {
-			use_trap = 1;
-		}
-		abstract {
-			return string
-      }
-	} else if !cnv:string(x) then {
-		runerr(103, x)
-	} else 
-		abstract {
-			return string
-      }
+      if is:pattern(x) then {
+         inline {
+            use_trap = 1;
+         }
+         abstract {
+            return string
+         }
+      } else if !cnv:string(x) then {
+         runerr(103, x)
+      } else 
+         abstract {
+            return string
+         }
+\end{verbatim}
 
+The value for the variable 'use\_trap' is set to identify if the argument is a pattern.  In the body it is determined which block of code to use.  The pattern block was derived from the pattern match function that is in the fxpattrn.ri file.
+
+
+\begin{verbatim}
    body {
 		if (use_trap == 1) { 
 			int curpos;
@@ -661,59 +264,8 @@ operator{*} = tabmat(x)
 				EVVal(k_pos, E_Spos);
 				}
 		} else {
-			register word l;
-			register char *s1, *s2;
-			C_integer i, j;
-			CURTSTATE();
+		...
 
-			/*
-			 * Make a copy of &pos.
-			 */
-			i = k_pos;
-
-			/*
-			 * Fail if &subject[&pos:0] is not of sufficient length to contain x.
-			 */
-			j = StrLen(k_subject) - i + 1;
-			if (j < StrLen(x))
-				fail;
-
-			/*
-			 * Get pointers to x (s1) and &subject (s2).  Compare them on a byte-wise
-			 *  basis and fail if s1 doesn''t match s2 for *s1 characters.
-			 */
-			s1 = StrLoc(x);
-			s2 = StrLoc(k_subject) + i - 1;
-			l = StrLen(x);
-			while (l-- > 0) {
-				if (*s1++ != *s2++)
-					fail;
-				}
-
-			/*
-			 * Increment &pos to tab over the matched string and suspend the
-			 *  matched string.
-			 */
-			l = StrLen(x);
-			k_pos += l;
-
-			EVVal(k_pos, E_Spos);
-
-			suspend x;
-
-			/*
-			 * tabmat has been resumed, restore &pos and fail.
-			 */
-			if (i > StrLen(k_subject) + 1)
-				runerr(205, kywd_pos);
-			else {
-				k_pos = i;
-				EVVal(k_pos, E_Spos);
-				}
-		}
-      fail;
-   }
-end
 \end{verbatim}
 
 \pagebreak

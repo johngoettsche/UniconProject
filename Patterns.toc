@@ -1,0 +1,10 @@
+\contentsline {section}{\numberline {1}Introduction}{3}
+\contentsline {section}{\numberline {2}Background}{4}
+\contentsline {section}{\numberline {3}Design Considerations}{5}
+\contentsline {subsection}{\numberline {3.1}Pattern matching statements}{6}
+\contentsline {subsection}{\numberline {3.2}SNOBOL4 and Unicon pattern operators}{7}
+\contentsline {subsection}{\numberline {3.3}SNOBOL4 and Unicon pattern functions}{8}
+\contentsline {subsubsection}{\numberline {3.3.1}Pos, Rpos, Tab and Rtab}{9}
+\contentsline {subsubsection}{\numberline {3.3.2}Back and Cancel}{10}
+\contentsline {section}{\numberline {4}Implementation}{10}
+\contentsline {subsection}{\numberline {4.1}Pattern matching statements}{10}
