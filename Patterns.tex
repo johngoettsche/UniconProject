@@ -186,12 +186,18 @@ The non-anchored pattern matching operation was resolved by Sudarshan Gaikaiwari
    subject ?? pattern
 \end{verbatim}
 
+The anchored pattern matching operation was defined in the pattern resources as a part of the internal match function, but had the Anchored\_Mode identifier set to false.  The default location of the index was set to 1.  The arguments for the internal match was changed so that the mode would be passed in along with the current index.  This allows the internal match to be used called and initiated in the proper location of the subject string.
+
 \subsubsection{Anchored mode from string scanning}
-The anchored pattern matching operation was defined in the pattern resources, but not implemented.  It was decided that integrating the pattern matching system into the Unicon string scanning environment.  Since the analysis of a string was in progress and the string scanning environment tracks the cursor or index position as it progresses, it was decided that pattern matching operation would be executed in the anchored mode.
+It was decided that integrating the pattern matching system into the Unicon string scanning environment would require the pattern matching be performed in the anchored mode, since the string scanning functions are dependent upon the index or cursor position.  For this implementation the Unicon tabmat operator '=' was determined to be an ideal choice for initiating a pattern match in the string scanning environment.  The use of an equals '=' before a pattern variable triggers the anchored mode pattern matching operation.
+ 
+\begin{verbatim}
+   subjectString ? {
+      match := =pattern
+   }
+\end{verbatim}
 
-The Unicon tabmat operator '=' was determined to be an ideal choice.  The use of an equals '=' before a pattern variable triggers the anchored mode pattern matching operation.
-
-The tabmat operator was modified to accept pattern data types.  The argument data type test section was modified as follows: 
+The tabmat operator was modified to accept pattern data types.  In the event that a pattern was its argument then it would have to initiate a pattern match in the anchored mode, otherwise it would have to function normally.  This section of code identifies if the argument is a pattern or a string and assigns its return value.
 
 \begin{verbatim}
    operator{*} = tabmat(x)
@@ -216,72 +222,65 @@ The tabmat operator was modified to accept pattern data types.  The argument dat
          }
 \end{verbatim}
 
-The value for the variable 'use\_trap' is set to identify if the argument is a pattern.  In the body it is determined which block of code to use.  The pattern block was derived from the pattern match function that is in the fxpattrn.ri file.
+For the pattern match, the body of code had to assign the values for each of the variables required in the pattern match.  The index or cursor location had to be assigned so that the anchored pattern match would begin where the string scanning had left off.  Finally, if the pattern was successful, then it would have to suspend the matching pattern update the index or cursor locations, if it failed then it would revert to the previous index.  The following code was added to the body of the tabmat operator:
 
 \begin{verbatim}
-   body {
-		if (use_trap == 1) { 
-			int curpos;
-			int oldpos;
-			int start;
-			int stop;
-			struct b_pattern *pattern;
-			tended struct b_pelem *phead;
-			
-			char * pattern_subject;
-			int subject_len;
-			int new_len;
-			CURTSTATE();
-			
-			/*
-			 * set cursor position, and subject to match
-			 */
-			oldpos = curpos = k_pos;
-			pattern_subject = StrLoc(k_subject);
-			subject_len = StrLen(k_subject);
-			pattern = (struct b_pattern *)BlkLoc(x);
-			phead = ResolvePattern(pattern);
-			
-			/*
-			 * runs a pattern match in the Anchored Mode and returns
-			 * a sub-string if it succeeds.
-			 */	
-			if (internal_match(pattern_subject, subject_len, pattern->stck_size,
-					phead, &start, &stop, curpos - 1, 1)){
-				/*
-				 * Set new &pos.
-				 */ 
-				k_pos = stop + 1;
-				EVVal(k_pos, E_Spos);	
-				oldpos = curpos;
-				curpos = k_pos;
-				/*
-				 * Suspend sub-string that matches pattern.
-				 */
-				suspend string(stop - start, StrLoc(k_subject)+ start);
-		
-				pattern_subject = StrLoc(k_subject);
-				if (subject_len != StrLen(k_subject)) {
-					curpos += StrLen(k_subject) - subject_len;
-					subject_len = StrLen(k_subject);
-				}
-			}
-			
-			/*
-			 * If tab is resumed, restore the old position and fail.
-			 */
-		printf("oldpos: %d, StrLen: %d\n", oldpos, StrLen(k_subject) + 1);
-			if (oldpos > StrLen(k_subject) + 1){
-		
-				runerr(205, kywd_pos);
-			} else {
-				k_pos = oldpos;
-				EVVal(k_pos, E_Spos);
-				}
-		} else {
-		...
-
+   /*
+    * set cursor position, and subject to match
+    */
+   oldpos = curpos = k_pos;
+   pattern_subject = StrLoc(k_subject);
+   subject_len = StrLen(k_subject);
+   pattern = (struct b_pattern *)BlkLoc(x);
+   phead = ResolvePattern(pattern);
+   /*
+    * runs a pattern match in the Anchored Mode and returns
+    * a sub-string if it succeeds.
+    */	
+   if (internal_match(pattern_subject, subject_len, pattern->stck_size,
+         phead, &start, &stop, curpos - 1, 1)){
+      /*
+       * Set new &pos.
+       */ 
+      k_pos = stop + 1;
+      EVVal(k_pos, E_Spos);	
+      oldpos = curpos;
+      curpos = k_pos;
+      /*
+       * Suspend sub-string that matches pattern.
+       */
+      suspend string(stop - start, StrLoc(k_subject)+ start);
+      pattern_subject = StrLoc(k_subject);
+      if (subject_len != StrLen(k_subject)) {
+         curpos += StrLen(k_subject) - subject_len;
+         subject_len = StrLen(k_subject);
+      }
+   }
+   /*
+    * If tab is resumed, restore the old position and fail.
+    */
+   printf("oldpos: %d, StrLen: %d\n", oldpos, StrLen(k_subject) + 1);
+   if (oldpos > StrLen(k_subject) + 1){
+      runerr(205, kywd_pos);
+   } else {
+      k_pos = oldpos;
+      EVVal(k_pos, E_Spos);
+   }
 \end{verbatim}
+
+\subsubsection{Anchored mode resulting from string scanning functions}
+This is still under review.
+
+\subsection{Revised Pattern Functions}
+The pattern function names have been revised in the function definitions and pattern files to match the recomendations made in section 3.3.  Revising the index and cursor location representation in the pattern functions are still in progress and need additional work.
+
+\section{Evaluation}
+
+\section{Conclusions}
+The implementation of patterns within the string scanning environment was successful.  A unicon programmer is now able to use pattern matching in the string scanning environment in the anchored mode.
+
+\section{Future Work}
+The index and cursor location representation for the pattern matching functions need to revised to match the Unicon string index system.
 
 \pagebreak
 \bibliography{Patterns}
