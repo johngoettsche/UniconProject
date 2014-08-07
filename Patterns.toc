@@ -1,18 +1,21 @@
-\contentsline {section}{\numberline {1}Introduction}{3}
-\contentsline {section}{\numberline {2}Background}{4}
-\contentsline {section}{\numberline {3}Design Considerations}{5}
-\contentsline {subsection}{\numberline {3.1}Pattern matching statements}{6}
-\contentsline {subsubsection}{\numberline {3.1.1}Patterns into String Scanning}{7}
-\contentsline {subsubsection}{\numberline {3.1.2}String Scanning into Patterns}{8}
-\contentsline {subsection}{\numberline {3.2}SNOBOL4 and Unicon pattern operators}{8}
-\contentsline {subsection}{\numberline {3.3}SNOBOL4 and Unicon pattern functions}{9}
-\contentsline {subsubsection}{\numberline {3.3.1}Index Related Functions}{10}
-\contentsline {subsubsection}{\numberline {3.3.2}Backtracking and Terminating Functions}{11}
-\contentsline {section}{\numberline {4}Implementation}{11}
-\contentsline {subsection}{\numberline {4.1}Pattern matching statements}{12}
-\contentsline {subsubsection}{\numberline {4.1.1}Anchored mode from string scanning}{12}
-\contentsline {subsubsection}{\numberline {4.1.2}Anchored mode resulting from string scanning functions}{15}
-\contentsline {subsection}{\numberline {4.2}Revised Pattern Functions}{15}
-\contentsline {section}{\numberline {5}Evaluation}{15}
-\contentsline {section}{\numberline {6}Conclusions}{15}
-\contentsline {section}{\numberline {7}Future Work}{15}
+\contentsline {section}{\numberline {1}Introduction}{4}
+\contentsline {section}{\numberline {2}Background}{5}
+\contentsline {section}{\numberline {3}Design Considerations}{6}
+\contentsline {subsection}{\numberline {3.1}Pattern matching statements}{7}
+\contentsline {subsubsection}{\numberline {3.1.1}Patterns into String Scanning}{8}
+\contentsline {subsubsection}{\numberline {3.1.2}String Scanning into Patterns}{9}
+\contentsline {subsection}{\numberline {3.2}SNOBOL4 and Unicon pattern operators}{9}
+\contentsline {subsection}{\numberline {3.3}SNOBOL4 and Unicon pattern functions}{10}
+\contentsline {subsubsection}{\numberline {3.3.1}Logically Redundant Function}{11}
+\contentsline {subsubsection}{\numberline {3.3.2}Index Related Functions}{11}
+\contentsline {subsubsection}{\numberline {3.3.3}Backtracking and Terminating Functions}{12}
+\contentsline {section}{\numberline {4}Implementation}{13}
+\contentsline {subsection}{\numberline {4.1}Pattern matching statements}{13}
+\contentsline {subsubsection}{\numberline {4.1.1}Anchored mode from string scanning}{14}
+\contentsline {subsubsection}{\numberline {4.1.2}Anchored mode resulting from string scanning functions}{16}
+\contentsline {subsection}{\numberline {4.2}Revised Pattern Functions}{16}
+\contentsline {subsubsection}{\numberline {4.2.1}Logically Redundant Function}{17}
+\contentsline {subsubsection}{\numberline {4.2.2}Index Related Functions}{17}
+\contentsline {section}{\numberline {5}Evaluation}{19}
+\contentsline {section}{\numberline {6}Conclusions}{19}
+\contentsline {section}{\numberline {7}Future Work}{19}

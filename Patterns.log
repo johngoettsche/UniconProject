@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.6.16)  1 AUG 2014 10:44
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.6.16)  5 AUG 2014 12:08
 entering extended mode
 **Patterns.tex
 (C:\Users\John\Documents\GitHub\UniconProject\Patterns.tex
@@ -67,29 +67,32 @@ Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 \Gin@req@height=\dimen103
 \Gin@req@width=\dimen104
 )
+(C:\Users\John\Documents\GitHub\UniconProject\threeparttable.sty
+\@tempboxb=\box26
+)
 ("C:\Program Files (x86)\MikTeX\tex\latex\tools\enumerate.sty"
 Package: enumerate 1999/03/05 v3.00 enumerate extensions (DPC)
 \@enLab=\toks15
 )
 (C:\Users\John\Documents\GitHub\UniconProject\Patterns.aux)
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 22.
+LaTeX Font Info:    ... okay on input line 22.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 27.
+(Font)              <12> on input line 29.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 27.
+(Font)              <8> on input line 29.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 27.
+(Font)              <6> on input line 29.
  [1
 
 {C:/Users/John/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
@@ -98,64 +101,68 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 4.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 4.
-)
+ [2])
 \tf@toc=\write3
- [2] [3] [4]
-[5]
-Underfull \hbox (badness 10000) in paragraph at lines 62--63
+ [3] [4]
+[5] [6]
+Underfull \hbox (badness 10000) in paragraph at lines 64--65
 
  []
 
-[6] [7] [8] [9] [10]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 174.
+[7] [8] [9]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <9> on input line 154.
+ [10] [11] [12]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 190.
 
- ("C:\Program Files (x86)\MikTeX\tex\latex\base\omscmr.fd"
+
+("C:\Program Files (x86)\MikTeX\tex\latex\base\omscmr.fd"
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 174.
-[11]
-Overfull \hbox (3.4312pt too wide) in paragraph at lines 183--184
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 190.
+
+Overfull \hbox (3.4312pt too wide) in paragraph at lines 199--200
 \OT1/cmr/m/n/10 The non-anchored pat-tern match-ing op-er-a-tion was re-solved 
 by Su-dar-shan Gaikai-
  []
 
-[12] [13]
-Overfull \hbox (27.74675pt too wide) in paragraph at lines 269--269
+[13] [14]
+Overfull \hbox (27.74675pt too wide) in paragraph at lines 285--285
 []   \OT1/cmtt/m/n/10 if (internal_match(pattern_subject, subject_len, pattern-
 >stck_size,[] 
  []
 
-[14]
-Overfull \hbox (17.24684pt too wide) in paragraph at lines 269--269
+[15]
+Overfull \hbox (17.24684pt too wide) in paragraph at lines 285--285
 []   \OT1/cmtt/m/n/10 printf("oldpos: %d, StrLen: %d\n", oldpos, StrLen(k_subje
 ct) + 1);[] 
  []
 
-[15] (C:\Users\John\Documents\GitHub\UniconProject\Patterns.bbl) [16]
-(C:\Users\John\Documents\GitHub\UniconProject\Patterns.aux) ) 
+[16] [17] [18] [19] (C:\Users\John\Documents\GitHub\UniconProject\Patterns.bbl)
+[20] (C:\Users\John\Documents\GitHub\UniconProject\Patterns.aux) ) 
 Here is how much of TeX's memory you used:
- 958 strings out of 493921
- 12759 string characters out of 3146483
- 66614 words of memory out of 3000000
- 4279 multiletter control sequences out of 15000+200000
- 9016 words of font info for 32 fonts, out of 3000000 for 9000
+ 985 strings out of 493921
+ 13195 string characters out of 3146483
+ 68806 words of memory out of 3000000
+ 4301 multiletter control sequences out of 15000+200000
+ 9629 words of font info for 34 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 27i,8n,21p,1110b,251s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files 
-(x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program Files (x86)/
-MikTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files (x86)/MikTeX
-/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Program Files (x86)/MikTeX/fonts/
-type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/
-public/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/
-amsfonts/cm/cmr12.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfont
-s/cm/cmr17.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cm
-r9.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb
-><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/P
-rogram Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on Patterns.pdf (16 pages, 185300 bytes).
+ 27i,8n,21p,960b,287s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program F
+iles (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program Files (
+x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files (x86)/M
+ikTeX/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Program Files (x86)/MikTeX/f
+onts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)/MikTeX/fonts/t
+ype1/public/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/pu
+blic/amsfonts/cm/cmr12.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/am
+sfonts/cm/cmr17.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/
+cm/cmr9.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmsy1
+0.pfb><C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb>
+<C:/Program Files (x86)/MikTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on Patterns.pdf (20 pages, 193493 bytes).
 PDF statistics:
- 98 PDF objects out of 1000 (max. 8388607)
+ 111 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -20,6 +20,10 @@ Ralph~E Griswold, Ivan~Paul Polonsky, and JF~Poage.
 \newblock The snobol4 programming language.
 \newblock 1971.
 
+\bibitem{JefferyImp}
+Clinton Jeffery.
+\newblock Implementation of icon and unicon.
+
 \bibitem{JefferyUnicon}
 Clinton Jeffery, Shamim Mohamed, Ray Pereda, and Robert Parlett.
 \newblock Programming with unicon.

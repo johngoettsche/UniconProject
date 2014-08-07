@@ -15,6 +15,8 @@
  \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
 %\usepackage{fancyhdr}
 
+\usepackage{threeparttable}
+
 \usepackage{enumerate}
 
 \begin{document}
@@ -115,36 +117,50 @@ The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thes
 \pagebreak
 \subsection{SNOBOL4 and Unicon pattern functions}
 
-In the Unicon string scanning environment the functions operate in relation to the cursor position of the subject string.  It is a inductive process where the data is analyzed by injecting the functions into the subject string.  While the patterns are pre-defined and are used deductively to search a subject string for the pattern.  In the pattern matching operation many of the functions operate independently of the cursor location and later determining a new cursor location to as a part of determining the results of the pattern match.  This difference lead the author to conclude that the SNOBOL pattern function names should be retained as much as possible while altering to fit a Unicon naming conventions.  The table below shows the SNOBOL4 primitive functions and the recommended Unicon pattern functions.  In most cases it is recommended that the function be lexically similar with the first character being capitalized and the following letters in lower-case, with a couple of exceptions for FAIL and ABORT.  Other changes are described in the example uses of the functions bellow: 
+In the Unicon string scanning environment the functions operate in relation to the cursor position of the subject string.  It is a inductive process where the data is analyzed by injecting the functions into the subject string.  While the patterns are pre-defined and are used deductively to search a subject string for the pattern.  In the pattern matching operation many of the functions operate independently of the cursor location and later determining a new cursor location to as a part of determining the results of the pattern match.  This difference lead the author to conclude that the SNOBOL pattern function names should be retained as much as possible while altering to fit a Unicon naming conventions.  
+
+The table below shows the SNOBOL4 primitive functions and the recommended Unicon pattern functions.  In most cases it is recommended that the function be lexically similar with the first character being capitalized and the following letters in lower-case, with a couple of exceptions for FAIL and ABORT.  Other changes are described in the example uses of the functions bellow: 
 
 \begin{table}[ht]
-	\caption{Pattern Functions}
-	\centering
-	\begin{tabular}{|l|l|}
-		\hline\hline
-		SNOBOL4 & Proposed \\
-		\hline
-		LEN(n) & Len(n) \\
-		SPAN(c) & Span(c)  \\
-		BREAK(c) & Break(c) \\
-		ANY(c) & Any(c) \\
-		NOTANY(c) & NotAny(c) \\
-		TAB(n) & Tab(n) \\
-		RTAB(n) & Rtab(n) \\
-		REM & Rem() \\
-		POS(n) & Pos(n)  \\
-		RPOS(n) & Rpos(n)  \\
-		FAIL & Back() \\
-		FENCE & Fence() \\
-		ABORT & Cancel() \\
-		ARB & Arb() \\
-		ARBNO(p) & Arbno(p) \\
-		BAL & Bal() \\
-		\hline
-	\end{tabular}
+	\begin{threeparttable}
+		\caption{Pattern Functions}
+		\centering
+		
+		\begin{tabular}{|l|l|}
+			\hline\hline
+			SNOBOL4 & Proposed \\
+			\hline
+			LEN(n) & Len(n) \\
+			SPAN(c) & Span(c)  \\
+			BREAK(c) & Break(c) \\
+			ANY(c) & Any(c) \\
+			NOTANY(c) & NotAny(c)* \\
+			TAB(n) & Tab(n) \\
+			RTAB(n) & Rtab(n)* \\
+			REM & Rem() \\
+			POS(n) & Pos(n)  \\
+			RPOS(n) & Rpos(n)*  \\
+			FAIL & Back()* \\
+			FENCE & Fence() \\
+			ABORT & Cancel()* \\
+			ARB & Arb() \\
+			ARBNO(p) & Arbno(p) \\
+			BAL & Bal() \\
+			\hline
+		\end{tabular}
+		
+		\begin{tablenotes}
+      		\small
+      		\item * described in subsection below
+      	\end{tablenotes}
+	\end{threeparttable}
 \end{table}
 
 \pagebreak
+\vspace{2 pc}
+\subsubsection{Logically Redundant Function}
+The complement operator allows the user to get the complement of a given cset, or a cset containing all the characters not included in the given cset.  Therefore the functionality of NotAny(c) function can be achieved by using the complement operator with a cset in the Any function as Any(~c).  The run time for each method is the same on average.
+
 \vspace{2 pc}
 \subsubsection{Index Related Functions}
 Pos, Rpos, Tab and Rtab functions all work directly with the cursor location or index.  In Unicon the index value is the number of spaces to the right from the left end of string with the first position being 1 or the number of spaces subtracted from the right end of the string.\cite{JefferyUnicon}   The illustration below demonstrates the cursor position values for the string "Unicon" with the vertical bars representing the index locations:
@@ -272,15 +288,97 @@ For the pattern match, the body of code had to assign the values for each of the
 This is still under review.
 
 \subsection{Revised Pattern Functions}
-The pattern function names have been revised in the function definitions and pattern files to match the recomendations made in section 3.3.  Revising the index and cursor location representation in the pattern functions are still in progress and need additional work.
+By revising the function definitions file, 'fdef.h', and the patterns source file 'fxpattrn.ri' in Unicon source files.  The pattern function names have been revised to be lexically more consistent with the Unicon language as shown on the table bellow:  
+
+\begin{table}[ht]
+	\begin{threeparttable}
+		\caption{Pattern Functions}
+		\centering
+		
+		\begin{tabular}{|l|l|}
+			\hline\hline
+			SNOBOL4 & Proposed \\
+			\hline
+			LEN(n) & Len(n) \\
+			SPAN(c) & Span(c)  \\
+			BREAK(c) & Break(c) \\
+			ANY(c) & Any(c) \\
+			NOTANY(c) & included in Any(c) \\
+			TAB(n) & Tab(n) \\
+			RTAB(n) & included in Tab(n) \\
+			REM & Rem() \\
+			POS(n) & Pos(n)  \\
+			RPOS(n) & included in Pos(n)  \\
+			FAIL & Back() \\
+			FENCE & Fence() \\
+			ABORT & Cancel() \\
+			ARB & Arb() \\
+			ARBNO(p) & Arbno(p) \\
+			BAL & Bal() \\
+			\hline
+		\end{tabular}
+		
+		\begin{tablenotes}
+      		\small
+      		\item Rtab(n) and Rpos(n) are redundant functions that can be performed using Tab(n) and Pos(n) with the Unicon string index system.  NotAny(c) can be handled just as well with the complement operator with the cset in the Any(c) function.
+      	\end{tablenotes}
+	\end{threeparttable}
+\end{table}
+
+\pagebreak
+\subsubsection{Logically Redundant Function}
+Although the complement operator allows the user to get the complement of a given cset and it can be used with a cset in the Any(c) function, NotAny(c) is still and option for the user.  It is a redundant function which may be desirable for those who have extensive experience with SNOBOL.  The run time for both methods are the same on average.
+
+\subsubsection{Index Related Functions}
+The pattern cursor location representation in the pattern functions have been revised to match the Unicon index location of strings in the following form.  
+
+\begin{verbatim}
+   -6  -5  -4  -3  -2  -1  0
+   | U | n | i | c | o | n |
+   1   2   3   4   5   6   7
+\end{verbatim}
+
+This was achieved by changing the Pos(n) function code to appear as follows:
+\begin{verbatim}
+function {1} Pos(position)
+   abstract {
+      return pattern;
+   }
+   body {
+      union block *bp;
+      /*
+       * check if position is negative
+       */
+      if(position.vword.integr < 1) {
+         /* change position to a positive value and use RPos */
+         position.vword.integr = -position.vword.integr;
+         ConvertPatternArgumentInt(position,bp,PC_RPos);
+      } else {
+         ConvertPatternArgumentInt(position,bp,PC_Pos);
+      }
+      return pattern(bp);
+      }
+end
+\end{verbatim}
+The position that is passed to the function is a descrip object in the Unicon virtual machine that is defined to be an integer.  The details of the descrip object can be found in Implementation of Icon and Unicon. \cite{JefferyImp}  The if statement in this function check to see if the value of the descrip object is negative.  If it is negative then its value is changed to its complement the the ConvertPatternArgumentInt function is called while passing position, a block pattern and the PC\_RPos call as arguments.  If it is positive then position is not changed and the PC\_Pos argument is used instead while calling the ConvertPatternArgumentInt function.  A nearly identical changes ware made to Tab function.
+
+The Rpos(n) and Rtab functions are now redundant, but are still available for the user who may be more comfortable with SNOBOL.  When using Rpos(n) and Rtab(n), the user has to be aware that they are bosed on the pattern matching cursor location system as follows:
+
+\begin{verbatim}
+   6   5   4   3   2   1   0
+   | U | n | i | c | o | n |
+\end{verbatim}
 
 \section{Evaluation}
+This implementation of SNOBOL4 patterns in the Unicon language is consistent with the lexical and functional structure of Unicon.  It also integrates the pattern matching system into Unicon's he string scanning environment.
 
 \section{Conclusions}
 The implementation of patterns within the string scanning environment was successful.  A unicon programmer is now able to use pattern matching in the string scanning environment in the anchored mode.
 
 \section{Future Work}
-The index and cursor location representation for the pattern matching functions need to revised to match the Unicon string index system.
+For the pattern data type to be fully integrated into the Unicon Language, the string scanning functions need to be integrated into the pattern data type and pattern matching operation.  
+
+Also the variables in patterns should be unevaluated by default.
 
 \pagebreak
 \bibliography{Patterns}
