@@ -1,32 +1,28 @@
 \begin{thebibliography}{1}
 
-\bibitem{Gaikaiwari2005}
-Sudarshan Gaikaiwari.
-\newblock {\em Adapting SNOBOL-style Patterns to the Unicon Language}.
-\newblock PhD thesis, New Mexico State University, 2005.
+\bibitem{Snobol}
+R.~E. Griswold, I.~P. Polonsky, and J.~Poage, {\em The SNOBOL4 Programming
+  Language}.
+\newblock Prentice-Hall, 1971.
 
-\bibitem{Griswold1980}
-Ralph~E Griswold.
-\newblock {\em Pattern Matching in Icon}.
-\newblock University of Arizona, Department of Computer Science, 1980.
+\bibitem{Gaikaiwari2005}
+S.~Gaikaiwari, ``{Adapting SNOBOL-style Patterns to the Unicon Language},''
+  Master's thesis, New Mexico State University, 2005.
 
 \bibitem{GriswoldIcon}
-Ralph~E Griswold and Madge~T Griswold.
-\newblock {\em The Icon programming language}, volume~30.
-\newblock Prentice-Hall Englewood Cliffs, NJ, 1983.
+R.~E. Griswold and M.~T. Griswold, {\em The Icon Programming Language}.
+\newblock Prentice-Hall Englewood Cliffs, NJ, 3~ed., 1983.
 
-\bibitem{Snobol}
-Ralph~E Griswold, Ivan~Paul Polonsky, and JF~Poage.
-\newblock The snobol4 programming language.
-\newblock 1971.
-
-\bibitem{JefferyImp}
-Clinton Jeffery.
-\newblock Implementation of icon and unicon.
+\bibitem{Griswold1980}
+R.~E. Griswold, {\em Pattern Matching in Icon}.
+\newblock University of Arizona, Department of Computer Science, 1980.
 
 \bibitem{JefferyUnicon}
-Clinton Jeffery, Shamim Mohamed, Ray Pereda, and Robert Parlett.
-\newblock Programming with unicon.
-\newblock {\em Draft manuscript from http://unicon. sourceforge. net}, 2004.
+C.~Jeffery, S.~Mohamed, R.~Pereda, and R.~Parlett, {\em Programming with
+  Unicon}.
+\newblock 2004.
+
+\bibitem{JefferyImp}
+C.~Jeffery, {\em Implementation of Icon and Unicon}.
 
 \end{thebibliography}
