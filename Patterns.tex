@@ -26,7 +26,7 @@
 \begin{document}
 
 \linespread{1}
-\title{Integrating pattern data type within Unicon}
+\title{Integrating pattern matching within string scanning}
 \author{John H. Goettsche\\
   Dept.\ of Computer Science\\
   University of Idaho}
@@ -34,7 +34,7 @@
 \maketitle
 
 \begin{abstract}
-The SNOBOL4 pattern data type and the pattern matching process were introduced to the Unicon language in 2005, but patterns were not integrated with the Unicon string scanning control structure.  The goal of this project is to make the pattern data type accessible to the Unicon string scanning and vise versa.  To accomplish this, a Unicon string scanning operator was changed to allow the execution a pattern match in the anchored mode. 
+A SNOBOL4 like pattern data type and pattern matching operation were introduced to the Unicon language in 2005, but patterns were not integrated with the Unicon string scanning control structure at that time.  The goal of this project is to make the pattern data type accessible to the Unicon string scanning and vice versa.  To accomplish this, a Unicon string scanning operator was changed to allow the execution of a pattern match in the anchored mode. 
 
 \end{abstract}
 
@@ -46,9 +46,9 @@ The SNOBOL4 pattern data type and the pattern matching process were introduced t
 \section{Introduction}
 In order to enhance programmers' productivity in analyzing strings, string scanning and pattern matching systems have been developed.  Modern highlevel languages tend to offer regular expressions and context free grammars for their string processing.  Analysis of strings often requires functionality beyond what these classes of languages offer.  SNOBOL4 was the most successful of the early string processing languages. \cite{Snobol, Gaikaiwari2005}  A pattern data type was employed in SNOBOL4 along with pattern operators and functions to perform the analysis.
 
-A successor to SNOBOL4 was Icon, whicn expanded upon the goal directed evaluation with generators and backtracking that was implicit in SNOBOL4's pattern matching.\cite{GriswoldIcon, Gaikaiwari2005}  It uses a string scanning method which passes through the subject string with a set of commands to manipulate and analyze its contents.  Many Icon programmers have expressed a desire for the functionality of SNOBOL4 patterns.\cite{Griswold1980}.
+A successor to SNOBOL4 was Icon, which expanded upon the goal directed evaluation with generators and backtracking that was implicit in SNOBOL4's pattern matching.\cite{GriswoldIcon, Gaikaiwari2005}  It uses a string scanning method which passes through the subject string with a set of commands to manipulate and analyze its contents.  Many of the Unicon string scanning fucntions resemble SNOBOL 4 patterns, but they are different in both how they are processed as well as their functionality.  Many Icon programmers have expressed a desire for the functionality of SNOBOL4 patterns.\cite{Griswold1980}.
 
-When Unicon was developed, its core elements came directly from Icon, where it inherited its string scanning functions.\cite{JefferyUnicon}  Many of the Unicon string scanning functions resemble SNOBOL4 patterns, but they are different in both how they processed as well as their functionality.  Patterns are instances of a structured data type that are used deductively to test whether the pattern exists within a subject string, while a string scanning environment uses a set of functions to inductively analyze or extract data from the subject string.  Patterns are pre-defined and applied later, while string scanning is performed as they are executed.  This allows composition and re-use in more flexible ways than is the case for code, which only has procedure and co-expression granularity.
+When Unicon was developed, its core elements came directly from Icon, where it inherited its string scanning functions.\cite{JefferyUnicon}  While patterns are instances of a structured data type that are used deductively to test whether the pattern exists within a subject string, the string scanning environment uses a set of functions to inductively analyze or extract data from the subject string.  Patterns are pre-defined and applied later, while string scanning is performed as string scanning functions when are executed.  Patterns allow composition and re-use in more flexible ways than is the case for code, which only has procedure and co-expression granularity.
 
 This paper briefly explores the background of SNOBOL4 patterns and Unicon string scanning functions.  It then presents a proposed design for integrating SNOBOL4 patterns within Unicon string scanning environments, and a description of how that implementation can be accomplished. 
 
@@ -56,16 +56,16 @@ This paper briefly explores the background of SNOBOL4 patterns and Unicon string
 
 SNOBOL was developed by David Farber, Ralph Griswold and Ivan Polonsky at Bell Telephone Laboratories in 1962.  SNOBOL4 was developed in 1967 and had many of the features that are included in popular dynamic programming languages including dynamic typing, eval and garbage collection.  Its pattern data type was its most important contribution to string processing.  Patterns could be as simple as a single character or a set of characters in a particular order, or they could be a complex arrangement with alternative character sets and pattern functions.  The pattern data type enabled the user to define and store patterns as variables to be used later when they were desired.\cite{Snobol}  
 
-One of the developers of SNOBOL4, Ralph Griswold, went to the University of Arizona and developed the Icon programming language which was more readable and simpler to use.\cite{JefferyUnicon}  Icon examined SNOBOL4's generators and backtracking in its pattern matching to develop and implement goal directed evaluation.\cite{Gaikaiwari2005}  SNOBOL4 patterns were not incorporated in Icon.  Instead Griswold developed an extensive string scanning system where a variety of functions and operations are executed in order to analyze and manipulate a subject string as a cursor advances through that string.  Unlike most other languages, Icon considers the string as a data type in its own right, rather than an array of characters. \cite{GriswoldIcon}  
+One of the developers of SNOBOL4, Ralph Griswold, went to the University of Arizona and developed the Icon programming language which was more readable and simpler to use.\cite{JefferyUnicon}  Griswold used his experience with SNOBOL4's generators and backtracking in its pattern matching to develop and implement goal directed evaluation.\cite{Gaikaiwari2005}  SNOBOL4 patterns were not incorporated in Icon.  Instead Griswold developed an extensive string scanning system where a variety of functions and operations are executed in order to analyze and manipulate a subject string as a cursor advances through that string.  Unlike most other languages, Icon considers the string as a data type in its own right, rather than an array of characters. \cite{GriswoldIcon}  
 
-Using the same Icon source code, Unicon was developed to include modern software features such as objects, networks and databases. \cite{JefferyUnicon} The string scanning control structure of Icon is a part of the Unicon programming language.  Sudarshan Gaikaiwari adopted SNOBOL patterns to the Unicon language for his master's thesis.  In his thesis, he added the pattern data type, and provided pattern matching functions and operators to execute the pattern searches.\cite{Gaikaiwari2005}  The pattern data type was not integrated and kept separate from the string scanning environment which may not execute pattern matching operations.  This paper proposes to refine Gaikaiwari's to be more naturally incorporated in the Unicon language allowing the string scanning environment to implement the pattern matching functionality.
+Using the same Icon source code, Unicon was developed to include modern software features such as objects, networks and databases. \cite{JefferyUnicon} The string scanning control structure of Icon is a part of the Unicon programming language.  Sudarshan Gaikaiwari adopted SNOBOL patterns to the Unicon language for his master's thesis.  In his thesis, he added the pattern data type, and provided pattern matching functions and operators to execute the pattern searches.\cite{Gaikaiwari2005}  The pattern data type was not integrated and kept separate from the string scanning environment which may not execute pattern matching operations.  This paper proposes to refine Gaikaiwari's work to be more naturally incorporated in the Unicon language allowing the string scanning environment to implement the pattern matching functionality.
 
 \section{Design Considerations}
 
-To integrate pattern matching with Unicon string string scanning consideration of how to implement patterns in the string scanning environment and how to implement string scanning in the pattern matching operation.  The pattern functions and operators will have to be consistent lexically and functionally with the Unicon language.
+To integrate pattern matching with Unicon string string scanning requirements, consideration of how to implement patterns in the string scanning environment and how to implement string scanning in the pattern matching operation.  The pattern functions and operators will have to be consistent lexically and functionally with the Unicon language.
 
 \subsection{Pattern matching statements}
-SNOBOL pattern matching can be executed in either anchored or non-anchored mode.  The anchored mode requires the match to start on the first character of the subject string while in the non-anchored mode the match can start at any location in the subject string.\cite{Snobol}  The pattern matching operation adapted by Gaikaiwari are generators.\cite{Gaikaiwari2005}  They only produce one value at a time, but since they suspend instead of return that value, the cursor position is stored so the next pattern can be applied to the remainder of the string to produce the next value. \cite{JefferyUnicon}
+SNOBOL pattern matching can be executed in either anchored or non-anchored mode.  The anchored mode requires the match to start on the first character of the subject string while in the non-anchored mode the match can start at any location in the subject string.\cite{Snobol}  The pattern matching operation adapted by Gaikaiwari are generators and operate in the non-anchored mode.\cite{Gaikaiwari2005}  They only produce one value at a time, but since they suspend instead of return that value, the cursor position is stored so the next pattern can be applied to the remainder of the string to produce the next value. \cite{JefferyUnicon}
 
 The pattern matching statement in SNOBOL4 and Gaikaiwari's Unicon implementation are in the following statements:\\
 
@@ -79,8 +79,8 @@ The pattern matching statement in SNOBOL4 and Gaikaiwari's Unicon implementation
 
 	\end{tabular}
 \end{table}
-
-In the above lines, the subject is scanned to see if it contains the pattern.  If it succeeds, then a substring of the subject that fits the pattern is produced.  In the anchored mode of the SNOBOL4 operation the pattern has to begin its match at the first character of the subject string; in the non-anchored mode the pattern could start at any character in the string. \cite{Snobol}  The Unicon operation is in the non-anchored mode by default. \cite{Gaikaiwari2005}
+\noindent
+In both examples, the subject is scanned to see if it contains the pattern.  If it succeeds, then a substring of the subject that fits the pattern is produced.  Gaikaiwari's syntax starts the pattern matching operation with the use of the \texttt{??} operator while SNOBOL4 uses two spaces between the subject and pattern.  Gaikaiwari's is easier to read and is a better match to Unicon syntactically.   
 
 To integrate pattern matching to the Unicon language we have to consider which mode is appropriate considering which environment it is in.  If it is being executed outside of a Unicon string scanning environment, the cursor position or index of the string has not been established.  Therefore the non-anchored mode would be appropriate, but if the user wishes to have the pattern match run in the anchored mode, starting the pattern with \texttt{Pos(1)} would have the desired effect.
 
@@ -93,13 +93,13 @@ The Unicon string scanning evironment is initialized in the following expression
    subject ? expr
 \end{verbatim}
 
-The \texttt{?} operator sets the cursor location to the first position in the subject string and the function or the block of functions that are called in the expression are executed.  Each function moves the cursor upon success, for this reason, I propose if in the event that a pattern is encountered with the tabmat \texttt{=} operator, the pattern match be performed in the anchored mode, with the cursor being advanced to the end of the matching pattern if there is success.
+The \texttt{?} operator sets the cursor location to the first position in the subject string and the function or the block of functions that are called in the expression are executed.  Scanning functions normally move the cursor upon success, for this reason, I propose in the event that a pattern is encountered with the tabmat \texttt{=} operator, the pattern match be performed in the anchored mode, with the cursor being advanced to the end of the matching pattern if there is success.
 
 \subsubsection{String Scanning into Patterns}
-Given that string scanning functions require an index location, using them in the pattern matching operation will require the cursor location or index to be established prior to their execution.  Considering that the pattern matching operation in the non-anchored mode does not start from a fixed index location, it is established when a pattern is found.  Therefore, it will be necessary to set the mode of the pattern match to anchored and an index location be established when a pattern contains a string scanning function.
+Given that string scanning functions require an index location, using them in the pattern matching operation will require the cursor location or index to be established prior to their execution.  The pattern matching operation in the non-anchored mode does not start from a fixed index location; it is established when a pattern is found.  Therefore, it will be necessary to set the mode of the pattern match to anchored and an index location be established when a pattern contains a string scanning function.
 
 \subsection{SNOBOL4 and Unicon pattern operators}
-The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thesis.  Although they are lexically different, they are functionally identical to SNOBOL4 pattern operators.  Gaikaiwari's operators for concatenation and alternation are lexically different from Unicon concatenation and alternation and the assignment operators are lexically inconsistant.  
+The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thesis.  Although they are lexically different, they are functionally identical to SNOBOL4 pattern operators.  Gaikaiwari's operators for concatenation and alternation are lexically different from Unicon concatenation and alternation and the assignment operators are lexically inconsistent.  
 
 \begin{table}[ht]
 	\caption{Pattern Operators}
@@ -120,18 +120,16 @@ The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thes
 	\end{tabular}
 \end{table}
 
-The Unicon operator for concatenation will modified to recognize whether the expression contains a pattern.
+The Unicon operator for concatenation will be modified to recognize whether the expression contains a pattern.
 
-The alternation ...(I haven't decided what to do on this yet, but would prefer to use the Unicon alternation.)
-
-The assignment operators will be changed lexically to use the \texttt{$>$} symbol to represent an assignments within patterns.  The Immediate Assignment, Conditional Assignment and Cursor assignment will be \texttt{\$$>$}, \texttt{$->$} and \texttt{.$>$} respectively.
+The assignment operators will be changed lexically to use the \texttt{$>$} symbol to represent an assignment within patterns.  The Immediate Assignment, Conditional Assignment and Cursor assignment will be \texttt{$=>$}, \texttt{$->$} and \texttt{.$>$} respectively.
 
 \vspace{1 pc}
 \subsection{SNOBOL4 and Unicon pattern functions}
 
-In the Unicon string scanning environment the functions operate in relation to the cursor position of the subject string.  It is a inductive process where the data is analyzed by injecting the functions into the subject string.  While the patterns are pre-defined and are used deductively to search a subject string for the pattern.  In the pattern matching operation many of the functions operate independently of the cursor location and later determining a new cursor location to as a part of determining the results of the pattern match.  This difference lead the author to conclude that the SNOBOL pattern function names should be retained as much as possible while altering to fit a Unicon naming conventions.  
+In the Unicon string scanning environment the functions operate in relation to the cursor position of the subject string.  It is an inductive process where the data is analyzed by injecting the functions into the subject string.  While the patterns are pre-defined and are used deductively to search a subject string for the pattern.  In the pattern matching operation many of the functions operate independently of the cursor location and later determine a new cursor location as a part of determining the results of the pattern match.  This difference led the author to conclude that the SNOBOL pattern function names should be retained as much as possible while altering to fit Unicon naming conventions.  
 
-The table below shows the SNOBOL4 primitive functions and the recommended Unicon pattern functions.  In most cases it is recommended that the function be lexically similar with the first character being capitalized and the following letters in lower-case, with a couple of exceptions for FAIL and ABORT.  Other changes are described in the example uses of the functions bellow: 
+The table below shows the SNOBOL4 primitive functions and the recommended Unicon pattern functions.  In most cases it is recommended that the function be lexically similar with the first character being capitalized and the following letters in lower-case, with exceptions for FAIL and ABORT.  Other changes are described in the example uses of the functions below: 
 
 \begin{table}[ht]
 	\begin{threeparttable}
@@ -213,13 +211,13 @@ To implement these changes the following changes to the Unicon language had to b
 \end{itemize}
 
 \subsection{Pattern matching statements}
-The non-anchored pattern matching operation was resolved by Sudarshan Gaikaiwari in his 2005 Master's theses at New Mexico State University.  A non-anchored pattern matching expression consists of a subject followed by the comparison operator \texttt{??} followed by a pattern and appears as follows:
+The non-anchored pattern matching operation was implemented by Sudarshan Gaikaiwari in his 2005 Master's thesis at New Mexico State University.  A non-anchored pattern matching expression consists of a subject followed by the comparison operator \texttt{??} followed by a pattern and appears as follows:
 
 \begin{verbatim}
    subject ?? pattern
 \end{verbatim}
 
-The anchored pattern matching operation was defined in the pattern resources as a part of the internal match function, but had the Anchored\_Mode identifier set to false.  The default location of the index was set to 1.  The arguments for the internal match was changed so that the mode would be passed in along with the current index.  This allows the internal match to be used called and initiated in the proper location of the subject string.
+The anchored pattern matching operation was defined in the pattern resources as a part of the internal match function, but had the Anchored\_Mode identifier set to false.  The default location of the index was set to 1.  The arguments for the internal match were changed so that the mode would be passed in along with the current index.  This allows the internal match to be called and initiated in the proper location of the subject string.
 
 \subsubsection{Anchored mode from string scanning}
 It was decided that integrating the pattern matching system into the Unicon string scanning environment would require the pattern matching be performed in the anchored mode, since the string scanning functions are dependent upon the index or cursor position.  For this implementation the Unicon tabmat operator \texttt{=} was determined to be an ideal choice for initiating a pattern match in the string scanning environment.  The use of an equals \texttt{=} before a pattern variable triggers the anchored mode pattern matching operation.
@@ -230,7 +228,7 @@ It was decided that integrating the pattern matching system into the Unicon stri
    }
 \end{verbatim}
 
-The tabmat operator was modified to accept pattern data types.  In the event that a pattern was its argument then it would have to initiate a pattern match in the anchored mode, otherwise it would have to function normally.  This section of code identifies if the argument is a pattern or a string and assigns its return value.
+The tabmat operator was modified to accept pattern data types.  In the event that a pattern was its argument then it initiates a pattern match in the anchored mode, otherwise it functions normally.  This section of code identifies if the argument is a pattern or a string and assigns its return value.
 
 \begin{verbatim}
    operator{*} = tabmat(x)
@@ -292,7 +290,6 @@ For the pattern match, the body of code had to assign the values for each of the
    /*
     * If tab is resumed, restore the old position and fail.
     */
-   printf("oldpos: %d, StrLen: %d\n", oldpos, StrLen(k_subject) + 1);
    if (oldpos > StrLen(k_subject) + 1){
       runerr(205, kywd_pos);
    } else {
@@ -305,7 +302,7 @@ For the pattern match, the body of code had to assign the values for each of the
 This is still under review.
 
 \subsection{Revised Pattern Functions}
-By revising the function definitions file, 'fdef.h', and the patterns source file 'fxpattrn.ri' in Unicon source files.  The pattern function names have been revised to be lexically more consistent with the Unicon language as shown on the table bellow:  
+By revising the function definitions file, \texttt{fdef.h}, and the patterns source file \texttt{fxpattrn.ri} in Unicon source files.  The pattern function names have been revised to be lexically more consistent with the Unicon language.  the table below condenses the Table 2 to show the SNOBOL4 pattern functions with their corresponding Unicon functions for this implementation:  
 
 \begin{table}[ht]
 		\caption{Pattern Functions}
@@ -334,15 +331,7 @@ By revising the function definitions file, 'fdef.h', and the patterns source fil
 \end{table}
 
 \subsubsection{Index Related Functions}
-The pattern cursor location representation in the pattern functions have been revised to match the Unicon index location of strings in the following form.  
-
-\begin{verbatim}
-   -6  -5  -4  -3  -2  -1  0
-   | U | n | i | c | o | n |
-   1   2   3   4   5   6   7
-\end{verbatim}
-
-This was achieved by changing the Pos(n) function code to appear as follows:
+The pattern cursor location representation in the pattern functions have been revised to match the Unicon index location of strings as shown in section 3.3.2 of this paper.  This was achieved by changing the Pos(n) function code to appear as follows:
 \begin{verbatim}
 function {1} Pos(position)
    abstract {
@@ -364,16 +353,19 @@ function {1} Pos(position)
       }
 end
 \end{verbatim}
-The position that is passed to the function is a descrip object in the Unicon virtual machine that is defined to be an integer.  The details of the descrip object can be found in Implementation of Icon and Unicon. \cite{JefferyImp}  The if statement in this function check to see if the value of the descrip object is negative.  If it is negative then its value is changed to its complement the the ConvertPatternArgumentInt function is called while passing position, a block pattern and the PC\_RPos call as arguments.  If it is positive then position is not changed and the PC\_Pos argument is used instead while calling the ConvertPatternArgumentInt function.  A nearly identical changes ware made to Tab function.
+The position that is passed to the function is a \texttt{struct descrip} in the Unicon virtual machine that is defined to be an integer.  The details of the \texttt{struct descrip} can be found in Implementation of Icon and Unicon. \cite{JefferyImp}  The \texttt{if} statement in this function checks to see if the value of the descrip object is negative.  If it is negative then its value is changed to its complement the the ConvertPatternArgumentInt function is called while passing position, a block pattern and the PC\_RPos call as arguments.  If it is positive then position is not changed and the PC\_Pos argument is used instead while calling the ConvertPatternArgumentInt function.  A nearly identical changes ware made to Tab function.
 
-The Rpos(n) and Rtab functions are now redundant, but are still available for the user who may be more comfortable with SNOBOL.  When using Rpos(n) and Rtab(n), the user has to be aware that they are bosed on the pattern matching cursor location system as follows:
-
-\begin{verbatim}
-   6   5   4   3   2   1   0
-   | U | n | i | c | o | n |
-\end{verbatim}
+The Rpos(n) and Rtab functions are now redundant, but are still available for the user who may be more comfortable with SNOBOL.  When using Rpos(n) and Rtab(n), the user has to be aware that they are based on the SNOBOL4 pattern matching cursor location system.
 
 \section{Evaluation}
+To evaluate the how successful this implementation of SNOBOL4 type patterns in Unicon, pattern statements for a set of benchmark problems in Unicon have to be compared with SNOBOL4 and Gaikaiwari's pattern statements and equivalent Unicon string scanning functions, to check for clarity, simplicity and functionality.  Clarity deals with the readability of the lines of code for each particular problem.  Can the user or programmer read the code without any ambiguity to what it is attempting to achieve.  Simplicity will be measured by the number of lines required to achieve each benchmark problem.  Functionality of the example code will have to be consistent.  Each example will have to achieve the same result for each benchmark problem.  The benchmark problems used in Gaikaiwari's thesis were:
+
+\begin{itemize}
+\item Decomposing phone numbers
+\item Detecting words with double letters
+\item Strings of the form \emph{$A^nB^nC^n$}
+\end{itemize}
+
 This implementation of SNOBOL4 patterns in the Unicon language is consistent with the lexical and functional structure of Unicon.  It also integrates the pattern matching system into Unicon's he string scanning environment.
 
 \section{Conclusions}
