@@ -1,0 +1,10 @@
+procedure main()
+	if "ab1" ?? PAny("ab") .| "1" && PCancel() then
+		write("Match succeeded")
+	else
+		write("Match failed")
+	if "1ab" ?? PAny("ab") .| "1" && PCancel() then
+		write("Match succeeded")
+	else
+		write("Match failed")
+end

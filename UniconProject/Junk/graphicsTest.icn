@@ -1,0 +1,10 @@
+link graphics
+
+procedure main()
+	WOpen("size=400,300")
+	WWrite("Hello World")
+	Fg("blue")
+	WAttrib("linewidth=3")
+	DrawRectangle(60, 80, 50, 20)
+	WDone()
+end

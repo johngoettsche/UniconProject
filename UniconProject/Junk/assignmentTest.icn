@@ -1,0 +1,8 @@
+procedure main()
+	p := ("b" .| "r") && ("e" .| "ea") && ("ds" .| "d")
+	pattern := .$ x && p && .$ y
+	line := "the beads are red"
+	write(line)
+	if line ?? pattern then
+		write(repl(" ", x - 1), repl("-", y - x))	
+end

@@ -1,0 +1,5 @@
+procedure main()
+	word := "gird"
+	word ?? "i" := "ou"
+	write(word)
+end

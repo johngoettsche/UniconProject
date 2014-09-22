@@ -1,0 +1,252 @@
+ALTERNATION
+
+SNOBOL4:
+Var = A | B
+
+Unicon Patterns:
+Var := A .| B
+
+Unicon Alternation:
+Var := A | B
+
+Unicon Repeated Alternation:
+Var := |A
+
+--------------------------------
+CONCATENATION
+
+SNOBOL4:
+Var = A B
+
+Unicon Patterns:
+Var := A && B
+
+Unicon Strings:
+Var := A || B
+
+Unicon Lists:
+Var := A ||| B
+
+--------------------------------
+MATCHING/SCANNING PROCESS
+
+SNOBOL4:
+'Reads'  ('B' | 'R') ('e' | 'ea') ('d' | 'ds')
+
+Unicon Patterns:
+"Reads" ?? ("B" .| "R") && ("e" .| "ea") && ("d" .| "ds")
+
+ R e a d s		-> "B"	   "e"	   "d"
+^					   "R"	   "ea"	   "ds"
+
+ R e a d s		   "B"	   "e"	   "d"
+^					-> "R"	   "ea"	   "ds"
+
+ R e a d s		   "B"	-> "e"	   "d"
+  ^				---"R"-	   "ea"	   "ds"
+  
+ R e a d s		   "B"	---"e"-	-> "d"
+    ^ 			---"R"-	   "ea"	   "ds"		
+	 
+ R e a d s		   "B"	---"e"-	   "d"
+    ^ 			---"R"-	   "ea"	-> "ds"
+	 
+ R e a d s		   "B"		"e" 		"d"
+    ^ 			---"R"-	-> "ea"	   "ds"
+
+ R e a d s		   "B"	   "e" 	-> "d"
+      ^			---"R"-	---"ea"-	   "ds"
+		
+ R e a d s		   "B"	   "e" 	-> "d"
+        ^		---"R"-	---"ea"-	   "ds"
+		  
+ R e a d s		   "B"	   "e" 	---"d"-
+        *		---"R"-	---"ea"-	   "ds"
+		  
+MATCHES: Read
+
+--------------------------------
+VARIABLE ASSIGNMENT
+
+SNOBOL4:
+line = 'Reads'
+pattern = ('B' | 'R') ('e' | 'ea') ('d' | 'ds')
+line  pattern
+
+Unicon:
+line := "Reads"
+pattern := ("B" .| "R") && ("e" .| "ea") && ("d" .| "ds")
+line ?? pattern
+
+MATCHES: Read
+
+--------------------------------
+CONDITIONAL ASSIGNMENT
+
+SNOBOL4:
+pattern = ('B' | 'R') . First
+
+Unicon:
+pattern := ("B" .| "R") -> First
+
+Result:
+First = B or R if overall pattern is successful
+
+--------------------------------
+IMMEDIATE ASSIGNMENT
+
+SNOBOL4:
+pattern = ('B' | 'R') $ First
+
+Unicon:
+pattern := ("B" .| "R") $$ First
+
+Result:
+First = B or R when matched even if overall pattern fails
+
+--------------------------------
+REPLACEMENT STATEMENT
+
+SNOBOL4:
+word = 'GIRD'
+word  'I' = 'OU'
+
+Unicon:
+word := "GIRD"
+word ?? "I" := "OU"
+
+result:
+word = GOURD
+
+--------------------------------
+LEN(n)/PLen(n)
+
+SNOBOL4:
+line = '1966 AUG. 09 John'
+dateOfBirth = LEN(4) . YR ' ' LEN(4) . MO ' ' LEN(2) . DAY
+line  dateOfBirth
+
+Unicon Patterns:
+line := "1966 AUG. 09 John"
+dateOfBirth := PLen(4) $$ YR && " " && PLen(4) $$ MO && " " && PLen(2) $$ DAY 
+line ?? dateOfBirth
+
+Unicon Strings:
+line := "1966 AUG. 09 John"
+line ? {
+	YR := move(4)
+	move(1)
+	MO := move(4)
+	move(1)
+	DAY := move(2)
+}
+
+result:
+YR = 1966
+MO = AUG.
+DAY = 09
+
+--------------------------------
+SPAN()/PSpan()
+
+SNOBOL4:
+line = "1966 AUG. 09 John"
+line  SPAN('0123456789') . year
+
+Unicon Patterns:
+line := "1966 AUG. 09 John"
+line ?? PSpan(&digits) -> year
+
+Unicon Strings:
+line := "1966 AUG. 09 John"
+line ? year := tab(many(&digits))
+
+result:
+year = 1966
+
+--------------------------------
+BREAK()/PBreak()
+
+SNOBOL4:
+line = "1966 AUG. 09 John"
+line  BREAK(' ') . year
+
+Unicon Patterns:
+line := "1966 AUG. 09 John"
+line ?? PBreak(' ') -> year
+
+Unicon Strings:
+line := "1966 AUG. 09 John"
+line ? year := tab(upto(' '))
+
+result:
+year = 1966
+
+--------------------------------
+ANY()/PAny()
+
+SNOBOL4:
+vowels = ANY('aeiou')
+line = 'def'
+line  vowels . result
+
+Unicon Patterns:
+vowels := PAny('aeiou')
+line := "def"
+line ?? vowels -> result
+
+Unicon Strings:
+vowels := 'aeiou'
+line := "def"
+line ? {
+	tab(upto(vowels))
+	result := move(1)
+}
+result:
+result = e
+
+--------------------------------
+NOTANY()/PNotAny()
+
+SNOBOL4:
+cons = NOTANY('aeiou')
+line = 'abcdef'
+line  cons . result
+
+Unicon Patterns:
+cons := PNotAny('aeiou')
+line := "abcdef"
+line ?? cons -> result
+
+Unicon Strings:
+vowels := 'aeiou'
+cons := &letters -- vowels
+line := "abcdef"
+line ? {
+	tab(upto(cons))
+	result := move(1)
+}
+result:
+result = b
+
+--------------------------------
+Example unevaluated variable
+
+SNOBOL4:
+
+Unicon:
+out := &output
+pattern := PLen(`n`) && "d"
+line := "Beads"
+n := 2
+line ?? pattern -> out 
+
+MATCHES: ead
+
+n := 1
+line ?? pattern -> out 
+
+MATCHES: ad
+
+--------------------------------
+Example 4.

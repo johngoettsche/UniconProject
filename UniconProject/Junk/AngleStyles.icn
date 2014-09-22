@@ -1,0 +1,56 @@
+procedure main(args)
+	local
+		north, south, east, west, acceptableSet, ns, NS, ew, EW, sixty, deg, 
+		ninety, minutes, seconds, sep, bearing, result
+ 
+	s := args[1]
+	acceptableSet := 'NnSsEeWw.-:' ++ &digits
+	north := Any('Nn')
+	south := Any('Ss')
+	east := Any('Ee')
+	west := Any('Ww')
+	ns := north .| south
+	ew := east .| west
+	quad := Any('1234')
+	quadrant := 0
+	sixty := Any("012345") && &digits
+	ninety := (("" .| Any(' 012345678')) && &digits) .| "90"
+	sep := Any(".-:")
+	bearing := 
+		#Ndd.mmssE or Ndd.mm.ssE
+		ns -> NS && ninety -> deg && sep && sixty -> minutes && sixty -> seconds && ew -> EW .|
+		ns -> NS && ninety -> deg && sep && sixty -> minutes && sep && sixty -> seconds && ew  -> EW .|
+		ns -> NS && ninety -> deg && sep && sixty -> minutes && ew -> EW .|
+		ns -> NS && ninety -> deg && sep && ew -> EW .|
+		ns -> NS && ninety -> deg && ew -> EW .|
+		#NEdd.mmss or NEdd.mm.ss
+		ns -> NS && ew -> EW && ninety -> deg && sep && sixty -> minutes && sixty -> seconds .|
+		ns -> NS && ew -> EW && ninety -> deg && sep && sixty -> minutes && sep && sixty -> seconds .|
+		ns -> NS && ew -> EW && ninety -> deg && sep && sixty -> minutes .|
+		ns -> NS && ew -> EW && ninety -> deg && sep .|
+		ns -> NS && ew -> EW && ninety -> deg .|
+		#Qdd.mmss or Qdd.mm.ss
+		quad -> quadrant && ninety -> deg && sep && sixty -> minutes && sixty -> seconds .|
+		quad -> quadrant && ninety -> deg && sep && sixty -> minutes && sep && sixty -> seconds .|
+		quad -> quadrant && ninety -> deg && sep && sixty -> minutes .|
+		quad -> quadrant && ninety -> deg && sep .|
+		quad -> quadrant && ninety -> deg 
+		
+		
+	if s ?? bearing then {
+		if quadrant > 0 then {
+			case quadrant of {
+				1: { NS := "N"
+				ES := "E" }
+				2: { NS := "S"
+				ES := "E" }
+				3: { NS := "S"
+				ES := "W" }
+				4: { NS := "N"
+				ES := "W" }
+			}
+		}
+		write(NS || deg || "d" || minutes || "\'" || seconds || "\"" || EW)
+	} else write("Not an acceptable bearing")
+
+end

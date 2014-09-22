@@ -1,0 +1,7 @@
+procedure main()
+	num := 0
+	every ch := !&ascii do {
+		write(num || "\t" || ch)
+		num +:= 1
+	}
+end

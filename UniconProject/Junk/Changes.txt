@@ -1,0 +1,16 @@
+
+.$ is not making the assignment
+
+PAbort() = PCancel() and works the same.
+
+PFail() does not compile with the following error:
+   icont: cannot resolve reference to file 'filename.u' or 'filename.u1'
+	
+	also the sample code does not get assign the chars to out.  Is there a problem
+	with ? and patterns? needs more investigation.
+	
+Reminder:
+	Unevaluated expressions:  use `n` and not 'n' important to make the distinction.
+	it is difficult to make the distinction by looking at the sample code.
+
+add "support image() for the pattern type" to the to do list

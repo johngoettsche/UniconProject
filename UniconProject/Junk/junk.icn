@@ -1,0 +1,12 @@
+procedure main(args)
+	out := &output
+	vowels := Any('aeiou')
+	pat := vowels && Len(3) -> out && .> space
+	line := "abcdefg"
+	
+	line ?? pat
+	write(space)
+	
+	line ? =pat
+	write(space)
+end

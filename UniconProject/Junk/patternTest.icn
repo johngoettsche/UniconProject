@@ -1,0 +1,16 @@
+procedure main(args)
+	out := &output
+	Manufacturer := ("Sony " .| "Dell ") -> Corporation
+	Type := ("Desktop" .| "Laptop") -> SysType
+	Machine := Manufacturer && Type 
+	pattern := .$ x -> out && Machine && .$ y -> out
+	testName := args[1] || args[2]
+	if testName ?? pattern then {
+		write(x)
+		write(Corporation)
+		write(SysType)
+		write(y)
+	} else {
+		write("No such computer on file.")
+	}
+end

@@ -1,0 +1,14 @@
+procedure main(args)
+	line := "this is a test"
+	c := 'a'
+	line ? {
+		substring := tab(upto(c))
+		write("tab: " || substring)
+	}
+	p := Rem()
+	line ? {
+		tab(upto(c))
+		substring := =p
+		write("rest: " || substring)
+	}
+end

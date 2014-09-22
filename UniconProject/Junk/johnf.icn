@@ -1,0 +1,7 @@
+procedure main(args)
+	out := &output
+	subject := args[1]
+	pat := PLen(1) $$ out && PFail()
+	write(subject)
+	subject ?? pat
+end

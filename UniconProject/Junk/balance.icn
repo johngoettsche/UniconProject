@@ -1,0 +1,8 @@
+procedure main(args)
+	out := &output
+	line := args[1]
+	pattern := PBal(line) -> presult
+	ssresult := bal('()', '(', ')', line, 1, *line)
+	if line ?? pattern then write("p:  " || presult)
+	write("ss: " || ssresult)
+end

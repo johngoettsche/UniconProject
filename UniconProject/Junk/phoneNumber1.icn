@@ -1,0 +1,23 @@
+procedure main()
+	input := "Home: (800) 555-1212x1234"
+	digit := '1234567890'
+	threedigit := digit && digit && digit
+	fourdigit := threedigit && digit
+	extention := "x" .| " ext. " .| "#"
+	phoneNumber := 
+		(threedigit $$ area && threedigit $$ trunk && fourdigit $$ rest && extention $$ ex && fourdigit $$ extent) .|
+	   (threedigit $$ area && Len(1) $$ sep && threedigit $$ trunk && `sep` && fourdigit $$ rest && extention $$ ex && fourdigit $$ extent) .|
+	   ("(" && threedigit $$ area && ") " && threedigit $$ trunk && Len(1) $$ sep && fourdigit $$ rest && extention $$ ex && fourdigit $$ extent) .|
+	   ("(" && threedigit $$ area && ")" && threedigit $$ trunk && Len(1) $$ sep && fourdigit $$ rest && extention $$ ex && fourdigit $$ extent) .|
+		(threedigit $$ area && threedigit $$ trunk && fourdigit $$ rest) .|
+	   (threedigit $$ area && Len(1) $$ sep && threedigit $$ trunk && `sep` && fourdigit $$ rest) .|
+	   ("(" && threedigit $$ area && ") " && threedigit $$ trunk && Len(1) $$ sep && fourdigit $$ rest) .|
+	   ("(" && threedigit $$ area && ")" && threedigit $$ trunk && Len(1) $$ sep && fourdigit $$ rest) 
+	if input ?? phoneNumber then {
+	   write("Area Code: " || area)
+      write("Trunk:     " || trunk)
+      write("Number:    " || rest)
+		write("Extention: " || extent)
+	}
+	else write("no match")
+end
