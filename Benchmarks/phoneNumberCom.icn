@@ -1,0 +1,17 @@
+procedure main()
+	out := &output
+	line := "Uncle Same: (456)555-1234 or uncle.sam@us.gov"
+	threedigit := &digits && &digits && &digits
+	fourdigit := threedigit && &digits
+	area := (Any("(") && threedigit && ")" )
+	pattern := ((threedigit && Any(' -.') => sep && threedigit && Any(`sep`) && fourdigit) -> out) 
+	.| ((area && threedigit && Any(' -.') && fourdigit) -> out)
+	result := ""
+	line ? {
+		tab(upto(&digits))
+		if line[&pos - 1] === "(" then {
+			tab(&pos - 1)
+			=pattern
+		} else =pattern
+	}
+end

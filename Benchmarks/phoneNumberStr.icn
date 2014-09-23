@@ -1,0 +1,22 @@
+procedure main()
+	line := "Uncle Same: (456)555-1234 or uncle.sam@us.gov"
+	sep := ""
+	a := 0
+	line ? {
+		tab(upto(&digits))
+		if line[&pos - 1] === "(" then {
+			tab(&pos - 1)
+			a := move(5)
+			a ? area := move(1) || tab(many(&digits)) || tab(any(')'))
+		} else {
+			area := tab(many(&digits))
+			sep := tab(any(' -.'))
+		} 
+		prefix := tab(many(&digits))
+		if sep === "" then sep := tab(any(' -.'))
+		else tab(any(sep))
+		number := tab(many(&digits))
+	}
+	if *a = 5 then write(area || prefix || sep || number)
+	else write(area || sep || prefix || sep || number)
+end
