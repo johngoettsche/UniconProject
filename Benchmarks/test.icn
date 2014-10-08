@@ -1,0 +1,10 @@
+procedure main()
+	line := "abcdefghijklmnopqrstuvwxyz"
+	pattern := Pos(func()) && Len(func() + 2)
+
+	write(line ?? pattern)
+end
+
+procedure func()
+	return 3
+end

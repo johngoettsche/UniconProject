@@ -1,0 +1,11 @@
+procedure main()
+	line := "this is a test"
+	pattern := Len(2) && `test`
+	test := pro(line)
+	write(line ?? pattern)
+end
+
+procedure pro(l)
+	pat := "test"
+	return l ?? pat
+end
