@@ -9,84 +9,123 @@
  
 "x || y - concatenate strings x and y." 
 operator{1} || cater(x, y)
-	declare {
-		int use_trap = 0;
-	}
-	
-	if is:pattern(x) then {
-		inline {
-			use_trap = 1;
-		}
-		abstract {
-			return pattern;
+   declare {
+      int use_trap = 0;
       }
-	} else {
-		if !cnv:string(x) then
-			runerr(103, x)
-		if !cnv:string(y) then
-			runerr(103, y)
-	}
+
+   if is:pattern(x) then {
+      inline {
+      use_trap = 1;
+      }
+      abstract {
+	 return pattern;
+	 }
+      }
+   else if is:pattern(y) then {
+      inline {
+      use_trap = 1;
+      }
+      abstract {
+	 return pattern;
+	 }
+      }
+   else{
+      if !cnv:string(x) then
+	 runerr(103, x)
+      if !cnv:string(y) then
+	 runerr(103, y)
+      }
 
    abstract {
       return string
       }
 
    body {
-		if (use_trap == 1) {	
-			union block *bp;
-			struct b_pattern *lp;
-			struct b_pattern *rp;
-			struct b_pelem *pe;
-			if(is:string(x))cnv_str_pattern(&x,&x);
-			if(is:string(y))cnv_str_pattern(&y,&y);
-			pe = Concat(Copy((struct b_pelem *)lp->pe), Copy((struct b_pelem *)rp->pe), rp->stck_size);
-			bp = pattern_make_pelem(lp->stck_size + rp->stck_size,pe);
-			return pattern(bp);
-		}else {
-			CURTSTATE();
+      if (use_trap == 1) {
+      
+	 union block *bp;
+	 /* convert strings to pattern blocks */
+	 struct b_pattern *lp;
+	 struct b_pattern *rp;
+	 struct b_pelem *pe;
+	 type_case x of {
+	    string:
+	       cnv_str_pattern(&x,&x);
+	    cset:
+	       cnv_cset_pattern(&x,&x);
+	    pattern: {
+	       }
+	    default:{
+	       runerr(127);
+	       }
+	       }
+	 type_case y of {
+	    string:
+	       cnv_str_pattern(&y,&y);
+	    cset:
+	       cnv_cset_pattern(&y,&y);
+	    pattern: {
+	       }
+	    default:{
+	       runerr(127);
+	       }
+	       }
 
-			/*
-			*  Optimization 1:  The strings to be concatenated are already
-			*   adjacent in memory; no allocation is required.
-			*/
-			if (StrLoc(x) + StrLen(x) == StrLoc(y)) {
-				StrLoc(result) = StrLoc(x);
-				StrLen(result) = StrLen(x) + StrLen(y);
-				return result;
-         } else if ((StrLoc(x) + StrLen(x) == strfree)
-					&& (DiffPtrs(strend,strfree) > StrLen(y))) {
-				/*
-				* Optimization 2: The end of x is at the end of the string space.
-				*  Hence, x was the last string allocated and need not be
-				*  re-allocated. y is appended to the string space and the
-				*  result is pointed to the start of x.
-				*/
-				result = x;
-				/*
-				 * Append y to the end of the string space.
-				 */
-				Protect(alcstr(StrLoc(y),StrLen(y)), runerr(0));
-				/*
-				 *  Set the length of the result and return.
-				 */
-				StrLen(result) = StrLen(x) + StrLen(y);
-				return result;
-         }
+	 lp = (struct b_pattern *)BlkLoc(x);
+	 rp = (struct b_pattern *)BlkLoc(y);
 
-			/*
-			 * Otherwise, allocate space for x and y, and copy them
-			 *  to the end of the string space.
-			 */
-			Protect(StrLoc(result) = alcstr(NULL, StrLen(x) + StrLen(y)), runerr(0));
-			memcpy(StrLoc(result), StrLoc(x), StrLen(x));
-			memcpy(StrLoc(result) + StrLen(x), StrLoc(y), StrLen(y));
+	 /* perform concatenation in patterns */
+	 pe = Concat(Copy((struct b_pelem *)lp->pe), Copy((struct b_pelem *)rp->pe), rp->stck_size);
+	 bp = pattern_make_pelem(lp->stck_size + rp->stck_size,pe);
+	 return pattern(bp);
+	 }
+      else {
+     
+	 CURTSTATE();
 
-			/*
-			 *  Set the length of the result and return.
-			 */
-			StrLen(result) = StrLen(x) + StrLen(y);
-			return result;
-		}
+	 /*
+	  *  Optimization 1:  The strings to be concatenated are already
+	  *   adjacent in memory; no allocation is required.
+	  */
+	 if (StrLoc(x) + StrLen(x) == StrLoc(y)) {
+	    StrLoc(result) = StrLoc(x);
+	    StrLen(result) = StrLen(x) + StrLen(y);
+	    return result;
+            } 
+	 else 
+	    if ((StrLoc(x) + StrLen(x) == strfree) && (DiffPtrs(strend,strfree) > StrLen(y))) {
+	       /*
+		* Optimization 2: The end of x is at the end of the string space.
+		*  Hence, x was the last string allocated and need not be
+		*  re-allocated. y is appended to the string space and the
+		*  result is pointed to the start of x.
+		*/
+	       result = x;
+	       /*
+		* Append y to the end of the string space.
+		*/
+	       Protect(alcstr(StrLoc(y),StrLen(y)), runerr(0));
+	       /*
+		*  Set the length of the result and return.
+		*/
+	       StrLen(result) = StrLen(x) + StrLen(y);
+	       return result;
+	       }
+
+	 /*
+	  * Otherwise, allocate space for x and y, and copy them
+	  *  to the end of the string space.
+	  */
+	 Protect(StrLoc(result) = alcstr(NULL, StrLen(x) + StrLen(y)), runerr(0));
+	 memcpy(StrLoc(result), StrLoc(x), StrLen(x));
+	 memcpy(StrLoc(result) + StrLen(x), StrLoc(y), StrLen(y));
+
+	 /*
+	  *  Set the length of the result and return.
+	  */
+	 StrLen(result) = StrLen(x) + StrLen(y);
+	 return result;
+	 }
    }
 end
 

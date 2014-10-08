@@ -1,6 +1,6 @@
 /*
  * File: fscan.r
- *  Contents: move, pos, tab, ev.
+ *  Contents: move, pos, tab.
  */
 
 "move(i) - move &pos by i, return substring of &subject spanned."
@@ -152,81 +152,3 @@ function{0,1+} tab(i)
       }
 end
 
-
-
-"ev(p) - return substring of &subject matched with pattern p."
-
-function{*} ev(pat)
-   /*
-    *  pat must be a pattern.
-    */
-
-	if is:pattern(pat) then {
-		abstract{
-			return string
-		}
-	}else{
-		runerr(114, pat);
-	}
-	
-   body {
-      int curpos;
-      int oldpos;
-      int start;
-      int stop;
-      struct b_pattern *pattern;
-      tended struct b_pelem *phead;
-		
-      char * pattern_subject;
-      int subject_len;
-      int new_len;
-		CURTSTATE();
-		
-		/*
-		 * set cursor position, and subject to match
-		 */
-		curpos = k_pos;
-		pattern_subject = StrLoc(k_subject);
-		subject_len = StrLen(k_subject);
-      pattern = (struct b_pattern *)BlkLoc(pat);
-      phead = ResolvePattern(pattern);
-		
-		/*
-		 * runs a pattern match in the Anchored Mode and returns
-		 * a sub-string if it succeeds.
-		 */
-	   if (internal_match(pattern_subject, subject_len, pattern->stck_size,
-				phead, &start, &stop, curpos - 1, 1)){
-			/*
-			 * Set new &pos.
-			 */		 
-			k_pos = stop + 1;
-			EVVal(k_pos, E_Spos);	
-			oldpos = curpos;
-			curpos = k_pos;	
-
-			/*
-			 * Suspend sub-string that matches pattern.
-			 */
-			suspend string(stop - start, StrLoc(k_subject)+ start);
-	
-			pattern_subject = StrLoc(k_subject);
-			if (subject_len != StrLen(k_subject)) {
-				curpos += StrLen(k_subject) - subject_len;
-				subject_len = StrLen(k_subject);
-			}
-		}
-		
-		/*
-       * If tab is resumed, restore the old position and fail.
-       */
-      if (oldpos > StrLen(k_subject) + 1)
-         runerr(205, kywd_pos);
-      else {
-         k_pos = oldpos;
-         EVVal(k_pos, E_Spos);
-         }
-		
-		fail;
-   }
-end

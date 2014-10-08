@@ -99,9 +99,6 @@ FncDef(trim,3)
 FncDef(type,1)
 FncDef(upto,4)
 FncDef(where,1)
-
-FncDef(ev,1)
-
 FncDefV(write)
 FncDefV(writes)
 #ifdef PatternType

@@ -156,130 +156,134 @@ operator{*} = tabmat(x)
    /*
     * x must be a pattern or convertible into a string.
     */
-	if is:pattern(x) then {
-		inline {
-			use_trap = 1;
-		}
-		abstract {
-			return string
-      }
-	} else if !cnv:string(x) then {
-		runerr(103, x)
-	} else 
-		abstract {
-			return string
-      }
+   if is:pattern(x) then {
+      inline {
+	 use_trap = 1;
+	 }
+      abstract {
+	 return string
+	 }
+      } 
+   else if !cnv:string(x) then {
+      runerr(103, x)
+      } 
+   else 
+      abstract {
+	 return string
+	 }
 
    body {
-		if (use_trap == 1) { 
-			int curpos;
-			int oldpos;
-			int start;
-			int stop;
-			struct b_pattern *pattern;
-			tended struct b_pelem *phead;
-			
-			char * pattern_subject;
-			int subject_len;
-			int new_len;
-			CURTSTATE();
-			
-			/*
-			 * set cursor position, and subject to match
-			 */
-			oldpos = curpos = k_pos;
-			pattern_subject = StrLoc(k_subject);
-			subject_len = StrLen(k_subject);
-			pattern = (struct b_pattern *)BlkLoc(x);
-			phead = ResolvePattern(pattern);
-			
-			/*
-			 * runs a pattern match in the Anchored Mode and returns
-			 * a sub-string if it succeeds.
-			 */	
-			if (internal_match(pattern_subject, subject_len, pattern->stck_size,
-					phead, &start, &stop, curpos - 1, 1)){
-				/*
-				 * Set new &pos.
-				 */ 
-				k_pos = stop + 1;
-				EVVal(k_pos, E_Spos);	
-				oldpos = curpos;
-				curpos = k_pos;
-				/*
-				 * Suspend sub-string that matches pattern.
-				 */
-				suspend string(stop - start, StrLoc(k_subject)+ start);
-		
-				pattern_subject = StrLoc(k_subject);
-				if (subject_len != StrLen(k_subject)) {
-					curpos += StrLen(k_subject) - subject_len;
-					subject_len = StrLen(k_subject);
-				}
-			}
-			
-			/*
-			 * If tab is resumed, restore the old position and fail.
-			 */
-		printf("oldpos: %d, StrLen: %d\n", oldpos, StrLen(k_subject) + 1);
-			if (oldpos > StrLen(k_subject) + 1){
-		
-				runerr(205, kywd_pos);
-			} else {
-				k_pos = oldpos;
-				EVVal(k_pos, E_Spos);
-				}
-		} else {
-			register word l;
-			register char *s1, *s2;
-			C_integer i, j;
-			CURTSTATE();
+      if (use_trap == 1) { 
+	 int curpos;
+	 int oldpos;
+	 int start;
+	 int stop;
+	 struct b_pattern *pattern;
+	 tended struct b_pelem *phead;
+	 
+	 char * pattern_subject;
+	 int subject_len;
+	 int new_len;
+	 CURTSTATE();
+	 
+	 /*
+	  * set cursor position, and subject to match
+	  */
+	 oldpos = curpos = k_pos;
+	 pattern_subject = StrLoc(k_subject);
+	 subject_len = StrLen(k_subject);
+	 pattern = (struct b_pattern *)BlkLoc(x);
+	 phead = ResolvePattern(pattern);
+	 
+	 /*
+	  * runs a pattern match in the Anchored Mode and returns
+	  * a sub-string if it succeeds.
+	  */
+	 if (internal_match(pattern_subject, subject_len, pattern->stck_size,
+	    phead, &start, &stop, curpos - 1, 1)){
+	    /*
+	     * Set new &pos.
+	     */ 
+	    k_pos = stop + 1;
+	    EVVal(k_pos, E_Spos);	
+	    oldpos = curpos;
+	    curpos = k_pos;
+	    /*
+	     * Suspend sub-string that matches pattern.
+	     */
+	    suspend string(stop - start, StrLoc(k_subject)+ start);
 
-			/*
-			 * Make a copy of &pos.
-			 */
-			i = k_pos;
+	    pattern_subject = StrLoc(k_subject);
+	    if (subject_len != StrLen(k_subject)) {
+	       curpos += StrLen(k_subject) - subject_len;
+	       subject_len = StrLen(k_subject);
+	       }
+	    }
 
-			/*
-			 * Fail if &subject[&pos:0] is not of sufficient length to contain x.
-			 */
-			j = StrLen(k_subject) - i + 1;
-			if (j < StrLen(x))
-				fail;
+	 /*
+	  * If tab is resumed, restore the old position and fail.
+	  */
+	 printf("oldpos: %d, StrLen: %d\n", oldpos, StrLen(k_subject) + 1);
+	 if (oldpos > StrLen(k_subject) + 1){
 
-			/*
-			 * Get pointers to x (s1) and &subject (s2).  Compare them on a byte-wise
-			 *  basis and fail if s1 doesn''t match s2 for *s1 characters.
-			 */
-			s1 = StrLoc(x);
-			s2 = StrLoc(k_subject) + i - 1;
-			l = StrLen(x);
-			while (l-- > 0) {
-				if (*s1++ != *s2++)
-					fail;
-				}
+	    runerr(205, kywd_pos);
+	    } 
+	 else {
+	    k_pos = oldpos;
+	    EVVal(k_pos, E_Spos);
+	    }
+	 } 
+      else {
+	 register word l;
+	 register char *s1, *s2;
+	 C_integer i, j;
+	 CURTSTATE();
 
-			/*
-			 * Increment &pos to tab over the matched string and suspend the
-			 *  matched string.
-			 */
-			l = StrLen(x);
-			k_pos += l;
+	 /*
+	  * Make a copy of &pos.
+	  */
+	 i = k_pos;
 
-			EVVal(k_pos, E_Spos);
+	 /*
+	  * Fail if &subject[&pos:0] is not of sufficient length to contain x.
+	  */
+	 j = StrLen(k_subject) - i + 1;
+	 if (j < StrLen(x))
+	    fail;
 
-			suspend x;
+	 /*
+	  * Get pointers to x (s1) and &subject (s2).  Compare them on a byte-wise
+	  *  basis and fail if s1 doesn''t match s2 for *s1 characters.
+	  */
+	 s1 = StrLoc(x);
+	 s2 = StrLoc(k_subject) + i - 1;
+	 l = StrLen(x);
+	 while (l-- > 0) {
+	     if (*s1++ != *s2++)
+	       fail;
+	       }
 
-			/*
-			 * tabmat has been resumed, restore &pos and fail.
-			 */
-			if (i > StrLen(k_subject) + 1)
-				runerr(205, kywd_pos);
-			else {
-				k_pos = i;
-				EVVal(k_pos, E_Spos);
-				}
-		}
+	 /*
+	  * Increment &pos to tab over the matched string and suspend the
+	  *  matched string.
+	  */
+	 l = StrLen(x);
+	 k_pos += l;
+
+	 EVVal(k_pos, E_Spos);
+
+	 suspend x;
+
+	 /*
+	  * tabmat has been resumed, restore &pos and fail.
+	  */
+	 if (i > StrLen(k_subject) + 1)
+	    runerr(205, kywd_pos);
+	 else {
+	    k_pos = i;
+	    EVVal(k_pos, E_Spos);
+	    }
+	 }
       fail;
    }
 end

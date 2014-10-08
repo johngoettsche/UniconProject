@@ -210,6 +210,22 @@ To implement these changes the following changes to the Unicon language had to b
 \item Modify the concatenation and alternation operators to function with patterns.
 \end{itemize}
 
+\begin{verbatim}
+if (use_trap == 1) {	
+			union block *bp;
+			struct b_pattern *lp;
+			struct b_pattern *rp;
+			struct b_pelem *pe;
+			lp = (struct b_pattern *)BlkLoc(x);
+			rp = (struct b_pattern *)BlkLoc(y);
+			if(is:string(x))cnv_str_pattern(&x, &x);
+			if(is:string(y))cnv_str_pattern(&y, &y);
+			pe = Concat(Copy((struct b_pelem *)lp->pe), Copy((struct b_pelem *)rp->pe), rp->stck_size);
+			bp = pattern_make_pelem(lp->stck_size + rp->stck_size,pe);
+			return pattern(bp);
+		}else {
+\end{verbatim}
+
 \subsection{Pattern matching statements}
 The non-anchored pattern matching operation was implemented by Sudarshan Gaikaiwari in his 2005 Master's thesis at New Mexico State University.  A non-anchored pattern matching expression consists of a subject followed by the comparison operator \texttt{??} followed by a pattern and appears as follows:
 
