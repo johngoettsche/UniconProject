@@ -1,0 +1,90 @@
+Calling a string scanning function in a pattern match
+
+	procedure main()
+		line2 := "mnopqrst"
+		line := "abcdefghijklmnopqrstuvwxyz"
+		pat := (line2 ? tab(upto('o'))) || .> x || Len(3)
+		
+		write(line ?? pat)
+		write(x)
+	end
+
+	result:
+		mnopq
+		15
+
+Calling a procedure in a pattern match
+
+	procedure main()
+		line := "this is a test"
+		pattern := Len(2) && pro(line)
+		write(line ?? pattern)
+	end
+
+	procedure pro(l)
+		pat := "test"
+		return l ?? pat
+	end
+
+	result:
+		a test
+		
+Calling class methods and variables in a pattern match
+
+	procedure main()
+		t := test()
+		line := "abcdefghijklmnopqrstuvwxyz"
+		pat := Pos(t.a) || Len(t.b)
+		pat2 := Pos(t.meth()) || Len(t.b)
+		write(line ?? pat)
+		write(line ?? pat2)
+		
+	end
+
+	class test(a, b)
+
+	method meth()
+		return a + 5
+	end
+	initially
+		a := 3
+		b := 5
+	end
+
+	result:
+		cdefg
+		hijkl
+
+Fails to recognize string scanning calls outside string scanning environment
+
+	procedure main()
+		line2 := "mnopqrst"
+		line := "abcdefghijklmnopqrstuvwxyz"
+		pat := tab(upto('o')) || Len(3)
+		
+		write(line ?? pat)
+		write(x)
+	end
+
+	#result:
+	#	error: wants a pattern in place of string scanning function
+	
+Fails to recognize string scanning calls outside string scanning environment
+
+	procedure main()
+		line2 := "mnopqrst"
+		line := "abcdefghijklmnopqrstuvwxyz"
+		pat := move(3) || Len(3)
+		
+		write(line ?? pat)
+		write(x)
+	end
+
+	#result:
+	#	error: wants a pattern in place of string scanning function
+	
+My hypothesis is: to get string scanning functions to work directly with the subject line 
+of a pattern match will require some changes to each of the string scanning
+functions, much like what was done with the string concatenation operator.  String scanning
+can be performed in a pattern match so long as it is a complete string scanning operation
+that returns a string.

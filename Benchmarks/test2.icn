@@ -1,0 +1,11 @@
+procedure main()
+	line2 := "mnopqrst"
+	line := "abcdefghijklmnopqrstuvwxyz"
+	pat := move(3) || Len(3)
+	
+	write(line ?? pat)
+	write(x)
+end
+
+#result:
+#	error 

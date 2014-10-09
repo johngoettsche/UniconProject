@@ -1,0 +1,19 @@
+procedure main()
+	t := test()
+	line := "abcdefghijklmnopqrstuvwxyz"
+	pat := Pos(t.a) || Len(t.b)
+	pat2 := Pos(t.meth()) || Len(t.b)
+	write(line ?? pat)
+	write(line ?? pat2)
+	
+end
+
+class test(a, b)
+
+method meth()
+	return a + 5
+end
+initially
+	a := 3
+	b := 5
+end

@@ -2,7 +2,7 @@ procedure main()
 	out := &output
 	s := stuff()
 	line := "abcdefghijklmnopqrstuvwxyz0123456789"
-	pattern := Len(6) && Any(`s.vowel()`) => out
+	pattern := Len(6) && Any(s.vowel()) => out
 	
 	write(line ?? pattern)
 end
@@ -14,3 +14,7 @@ class stuff()
 initially
 
 end
+
+#result:
+#	i
+#	cdefghi

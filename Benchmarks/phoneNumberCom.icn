@@ -2,8 +2,8 @@ procedure main()
 	out := &output
 	line := "Uncle Same: (456)555-1234 or uncle.sam@us.gov"
 	threedigit := &digits && &digits && &digits
-	fourdigit := threedigit && &digits
-	area := (Any("(") && threedigit && ")" )
+	fourdigit := threedigit || &digits
+	area := (Any("(") || threedigit || ")" )
 	pattern := ((threedigit && Any(' -.') => sep && threedigit && Any(`sep`) && fourdigit) -> out) 
 	.| ((area && threedigit && Any(' -.') && fourdigit) -> out)
 	result := ""
@@ -15,3 +15,6 @@ procedure main()
 		} else =pattern
 	}
 end
+
+#result:
+#	

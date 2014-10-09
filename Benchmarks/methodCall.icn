@@ -1,7 +1,6 @@
 procedure main()
 	line := "this is a test"
-	pattern := Len(2) && `test`
-	test := pro(line)
+	pattern := Len(2) && pro(line)
 	write(line ?? pattern)
 end
 
@@ -9,3 +8,6 @@ procedure pro(l)
 	pat := "test"
 	return l ?? pat
 end
+
+#result:
+#	a test
