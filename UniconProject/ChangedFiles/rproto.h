@@ -124,6 +124,11 @@ int		cnv_str		(dptr s, dptr d);
 int		cnv_tcset	(struct b_cset *cbuf, dptr s, dptr d);
 int		cnv_tstr	(char *sbuf, dptr s, dptr d);
 #endif					/* MultiThread */
+#ifdef PatternType
+struct b_pelem *Copy(struct b_pelem * P);
+void 	cnv_str_pattern(dptr s, dptr p);
+void 	cnv_cset_pattern(dptr s, dptr p);
+#endif               /* PatternType */
 int		co_chng		(struct b_coexpr *ncp, struct descrip *valloc,
 				   struct descrip *rsltloc,
 				   int swtch_typ, int first);

@@ -137,8 +137,8 @@ enum pattern_codes{
 int internal_match(char * pat_sub, int Length, int Pat_S,
 		struct b_pelem * pattern, int *Start, int *Stop,
 		int initial_cursor, int Anchored_Mode);
-static void cnv_str_pattern(dptr s, dptr p);
-static void cnv_cset_pattern(dptr s, dptr p);
+/*static void cnv_str_pattern(dptr s, dptr p); */
+/*static void cnv_cset_pattern(dptr s, dptr p); */
 
 /* review for merging? with other checked calloc functions? */
 static void * checked_calloc(size_t nelem, size_t elsize)
@@ -408,9 +408,9 @@ static struct b_pelem *  ResolveReferences(struct b_pelem * P )
 
 
 /*
- * Copy
+ * Copy 
  */
-static struct b_pelem *  Copy (struct b_pelem * P )
+struct b_pelem *  Copy (struct b_pelem * P )
 {
    if (P == NULL) {
       DEBUGF(20,(stdout,"Null pointer passed to copy"));
@@ -571,6 +571,7 @@ function {*} pattern_match(underef psub -> dpsub, pat)
     *  psub must either be a string or be convertible to one. Decide
     *  whether a substring trapped variable can be created.
     */
+	
    if is:variable(psub) && is:string(dpsub) then {
       abstract {
 			return new tvsubs(type(psub))
@@ -634,8 +635,7 @@ function {*} pattern_match(underef psub -> dpsub, pat)
    }
 end
 
-
-static void cnv_str_pattern(dptr s, dptr p)
+void cnv_str_pattern(dptr s, dptr p)
 {
    union block *bp;
    bp = pattern_make(0, &EOP,PC_String,1, *s);
@@ -644,7 +644,7 @@ static void cnv_str_pattern(dptr s, dptr p)
 }
 
 
-static void cnv_cset_pattern(dptr s, dptr p)
+void cnv_cset_pattern(dptr s, dptr p)
 {
    union block *bp;
    bp = pattern_make(0, &EOP,PC_Any_CS,1, *s);

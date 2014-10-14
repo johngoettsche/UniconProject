@@ -29,7 +29,23 @@ operator{1} || cater(x, y)
 	 return pattern;
 	 }
       }
-   else{
+   else if is:cset(x) then {
+      inline {
+      use_trap = 1;
+      }
+      abstract {
+	 return pattern;
+	 }
+      }
+   else if is:cset(y) then {
+      inline {
+      use_trap = 1;
+      }
+      abstract {
+	 return pattern;
+	 }
+      }
+   else {
       if !cnv:string(x) then
 	 runerr(103, x)
       if !cnv:string(y) then
