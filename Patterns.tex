@@ -95,8 +95,8 @@ The Unicon string scanning evironment is initialized in the following expression
 
 The \texttt{?} operator sets the cursor location to the first position in the subject string and the function or the block of functions that are called in the expression are executed.  Scanning functions normally move the cursor upon success, for this reason, I propose in the event that a pattern is encountered with the tabmat \texttt{=} operator, the pattern match be performed in the anchored mode, with the cursor being advanced to the end of the matching pattern if there is success.
 
-\subsubsection{String Scanning into Patterns}
-Given that string scanning functions require an index location, using them in the pattern matching operation will require the cursor location or index to be established prior to their execution.  The pattern matching operation in the non-anchored mode does not start from a fixed index location; it is established when a pattern is found.  Therefore, it will be necessary to set the mode of the pattern match to anchored and an index location be established when a pattern contains a string scanning function.
+\subsubsection{String Scanning within Patterns}
+According Gaikaiwari's thesis, his pattern matching environment allows simple single depth function calls to be used as unevaluated variables and functions.  It does not allow for function calls from within function calls like \texttt{tab(upto(cset))}.\cite{Gaikaiwari2005}  I propose expanding the unevaluated variables and functions to handle more complex functions calls that are common when performing string scanning operations.
 
 \subsection{SNOBOL4 and Unicon pattern operators}
 The pattern operators for Unicon were defined by Gaikaiwari in his Master's Thesis.  Although they are lexically different, they are functionally identical to SNOBOL4 pattern operators.  Gaikaiwari's operators for concatenation and alternation are lexically different from Unicon concatenation and alternation and the assignment operators are lexically inconsistent.  
@@ -217,15 +217,13 @@ The non-anchored pattern matching operation was implemented by Sudarshan Gaikaiw
    subject ?? pattern
 \end{verbatim}
 
-The anchored pattern matching operation was defined in the pattern resources as a part of the internal match function, but had the Anchored\_Mode identifier set to false.  The default location of the index was set to 1.  The arguments for the internal match were changed so that the mode would be passed in along with the current index.  This allows the internal match to be called and initiated in the proper location of the subject string.
+The anchored pattern matching operation was defined in the pattern resources as a part of the internal match function, but had the Anchored\_Mode identifier set to false.  The default location of the index was set to 1.  The arguments for the internal match were changed so the mode would be passed in along with the current index.  This allows the internal match to be called and initiated in the proper location of the subject string.
 
 \subsubsection{Anchored mode from string scanning}
 It was decided that integrating the pattern matching system into the Unicon string scanning environment would require the pattern matching be performed in the anchored mode, since the string scanning functions are dependent upon the index or cursor position.  For this implementation the Unicon tabmat operator \texttt{=} was determined to be an ideal choice for initiating a pattern match in the string scanning environment.  The use of an equals \texttt{=} before a pattern variable triggers the anchored mode pattern matching operation.
  
 \begin{verbatim}
-   subjectString ? {
-      match := =pattern
-   }
+   subjectString ? =pattern
 \end{verbatim}
 
 The tabmat operator was modified to accept pattern data types.  In the event that a pattern was its argument then it initiates a pattern match in the anchored mode, otherwise it functions normally.  This section of code identifies if the argument is a pattern or a string and assigns its return value.
@@ -298,8 +296,11 @@ For the pattern match, the body of code had to assign the values for each of the
    }
 \end{verbatim}
 
+\subsubsection{String Scanning Functions as Unevaluated Variables}
+
+
 \subsubsection{String and Pattern Concatenation Operators}
-It was decided to have a consistent concatenation operator, therefore the pattern concatenation operator \texttt{&&} had to be removed and the string concatenation operator \texttt{||} would have to be used in its place.  The existing string concatenation operator accepted only strings.  Pattern concatenation accepts strings, c-sets and patterns.  Therefor the string concatenation operator had to changed to accept c-sets and patterns.  String concatenation and pattern concatenation are handled in separate operations and are performed on their respective data types; strings must be sent to the string concatenation operator and patterns must be sent to the pattern concatenation operator. 
+It was decided to have a consistent concatenation operator, therefore the pattern concatenation operator \texttt{\&\&} had to be removed and the string concatenation operator $\vert\vert$ would have to be used in its place.  The existing string concatenation operator accepted only strings.  Pattern concatenation accepts strings, c-sets and patterns.  Therefor the string concatenation operator had to changed to accept c-sets and patterns.  String concatenation and pattern concatenation are handled in separate operations and are performed on their respective data types; strings must be sent to the string concatenation operator and patterns must be sent to the pattern concatenation operator. 
 \begin{verbatim}
    declare {
       int use_trap = 0;

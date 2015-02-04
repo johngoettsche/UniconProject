@@ -12,10 +12,10 @@
 \contentsline {section}{\numberline {4}Implementation}{12}
 \contentsline {subsection}{\numberline {4.1}Pattern matching statements}{12}
 \contentsline {subsubsection}{\numberline {4.1.1}Anchored mode from string scanning}{13}
-\contentsline {subsubsection}{\numberline {4.1.2}Anchored mode resulting from string scanning functions}{15}
-\contentsline {subsection}{\numberline {4.2}Revised Pattern Functions}{15}
-\contentsline {subsubsection}{\numberline {4.2.1}Index Related Functions}{16}
-\contentsline {section}{\numberline {5}Evaluation}{17}
-\contentsline {subsection}{\numberline {5.1}Decomposing phone numbers}{18}
-\contentsline {section}{\numberline {6}Conclusions}{19}
-\contentsline {section}{\numberline {7}Future Work}{19}
+\contentsline {subsubsection}{\numberline {4.1.2}String and Pattern Concatenation Operators}{15}
+\contentsline {subsection}{\numberline {4.2}Revised Pattern Functions}{17}
+\contentsline {subsubsection}{\numberline {4.2.1}Index Related Functions}{18}
+\contentsline {section}{\numberline {5}Evaluation}{19}
+\contentsline {subsection}{\numberline {5.1}Decomposing phone numbers}{20}
+\contentsline {section}{\numberline {6}Conclusions}{20}
+\contentsline {section}{\numberline {7}Future Work}{21}
