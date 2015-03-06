@@ -223,6 +223,9 @@ void		fpetrap		(void);
 int		getenv_r	(const char *name, char *buf, size_t len);
 word		getrandom	(void);
 int		getvar		(char *s,dptr vp);
+
+int 		getkeyword	(char *s, dptr vp);
+
 int		get_CCompiler	(char *s);
 int		get_num_cpu_cores();
 uword		hash		(dptr dp);
@@ -248,8 +251,11 @@ int		interp		(int fsig,dptr cargp);
 void		inttrap		(void);
 void		irunerr		(int n, C_integer v);
 int		iselect		(int fd, int t);
+int		Kascii		(dptr cargp);
 int		Kcset		(dptr cargp);
+int		Kdigits		(dptr cargp);
 int		Klcase		(dptr cargp);
+int		Kletters	(dptr cargp);
 int		Kucase		(dptr cargp);
 int		lexcmp		(dptr dp1,dptr dp2);
 word		longread	(char *s,int width, word len,FILE *fname);

@@ -179,12 +179,14 @@ operator{*} = tabmat(x)
 	 pattern_subject = StrLoc(k_subject);
 	 subject_len = StrLen(k_subject);
 	 pattern = (struct b_pattern *)BlkD(x, Pattern);
+
 	 phead = (struct b_pelem *)ResolvePattern(pattern);
 	 
 	 /*
 	  * runs a pattern match in the Anchored Mode and returns
 	  * a sub-string if it succeeds.
 	  */
+printf("pos: %d\n", k_pos);
 	 if (internal_match(pattern_subject, subject_len, pattern->stck_size,
 	    phead, &start, &stop, k_pos - 1, 1)){
 	    /*
@@ -196,6 +198,7 @@ operator{*} = tabmat(x)
 	    /*
 	     * Suspend sub-string that matches pattern.
 	     */
+printf("start %d stop %d\n", start, stop);
 	    suspend string(stop - start, StrLoc(k_subject)+ start);
 
 	    pattern_subject = StrLoc(k_subject);
@@ -204,7 +207,6 @@ operator{*} = tabmat(x)
 	       subject_len = StrLen(k_subject);
 	       }
 	    }
-
 	 /*
 	  * If tab is resumed, restore the old position and fail.
 	  */

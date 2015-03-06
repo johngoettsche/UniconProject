@@ -356,8 +356,8 @@ procedure do_equal()
 		  return SEQ
 	      }
 	      if yytext ||:= =":=" then { return AUGNMEQ }
-			if yytext ||:= =">" then { return PIMDASSN }
-			tokflags +:= Beginner
+	      if yytext ||:= =">" then { return PIMDASSN }
+	      tokflags +:= Beginner
 	      return NMEQ
 end
 

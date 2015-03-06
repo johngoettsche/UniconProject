@@ -134,7 +134,7 @@ enum pattern_codes{
 #define DEBUGF(lev, x)
 #endif /* DEBUG not defined */
 
-dptr processFuncCallList(struct b_list *list);
+dptr processFuncCallList(struct b_list *list, int csr);
 /*  *** added to rproto.h ***
 int internal_match(char * pat_sub, int Length, int Pat_S,
 		struct b_pelem * pattern, int *Start, int *Stop,
@@ -276,19 +276,24 @@ struct b_list *ResolveList(struct b_list *lp)
    tended struct b_list *lpdest;
    struct b_list *lptemp;
    tended char *temp;
+printf("ResolveList\n");
    lpsrc = lp;
    lpdest = alclist(lpsrc->size,lpsrc->size);
    DEBUGF(20,(stdout, "Resolving function name and parameters"));
    nargs = lpsrc->size -1;
    elsrc = (struct b_lelem *)lpsrc->listhead;
+cnv:C_string(elsrc->lslots[0], temp);
+printf("process: %s\n", temp);
+temp = "";
    proc.dword = D_Proc;
+   /* convert string in to process and store in proc*/
    BlkLoc(proc)= (union block *)strprc(&elsrc->lslots[0],nargs);
    if (BlkLoc(proc) == NULL) {
       fprintf(stdout, "Unable to find proc");
       fatalerr(0, NULL);
       }
-   /*eldest = (struct b_lelem *)lpdest->listhead;
-   eldest->lslots[0] = proc;*/
+   eldest = (struct b_lelem *)lpdest->listhead;
+   eldest->lslots[0] = proc;
    for (; BlkType(elsrc) == T_Lelem; elsrc = (struct b_lelem *)elsrc->listnext) {
       for (i = 1; i < elsrc->nused; i++) {
 	 tended char * varname;
@@ -313,6 +318,16 @@ struct b_list *ResolveList(struct b_list *lp)
 		  cnv:string(elsrc->lslots[i], elsrc->lslots[i]);
 		  parm = elsrc->lslots[i];
 		  }
+	       else if (strcspn(varname, "&") == 0) {
+		  if ( getkeyword(varname, &parm) == Failed) {
+		     VariableLookupFailed(varname);
+	             }
+		  cnv:cset(parm, elsrc->lslots[i]);
+		  }
+	       else if (strcspn(varname, "1234567890") == 0) {
+		  cnv:integer(elsrc->lslots[i], elsrc->lslots[i]);
+		  parm = elsrc->lslots[i];
+		  }
 	       else {
 		  if ( getvar(varname, &parm) == Failed) {
 		     VariableLookupFailed(varname);
@@ -334,7 +349,7 @@ struct b_list *ResolveList(struct b_list *lp)
 	    /* cset, integer constant, ... */
 	    parm = elsrc->lslots[i];
 	    }
-         /*eldest->lslots[i] = parm;*/
+         eldest->lslots[i] = parm;
          }
       }
    return lpdest;
@@ -371,6 +386,7 @@ static struct b_pelem * ResolveReferences(struct b_pelem * P )
       /*
        * Now copy all nodes
        */
+printf("ResolveReferences\n");
       for(J = 1; J < RefLen; J++)
 	 Copy[J] = (struct b_pelem *)pelem_copy(Refs[J]);
 
@@ -395,7 +411,7 @@ static struct b_pelem * ResolveReferences(struct b_pelem * P )
 	 /*
 	  * Resolve references
 	  */
-
+printf("beginning of switch %ld\n", E->pcode);
 	 switch(E->pcode){
 	 case PC_Pos_NP:
 	 case PC_Len_NP:
@@ -411,7 +427,8 @@ static struct b_pelem * ResolveReferences(struct b_pelem * P )
 	 case PC_Assign_OnM:
 	 case PC_Assign_Imm: 
 	 case PC_Rpat:{
-	    tended char * varname;				
+	    tended char * varname;
+printf("first set\n");				
 	    if (is:list(E->parameter)) {
 	       /*
 		* we know our list
@@ -426,14 +443,17 @@ static struct b_pelem * ResolveReferences(struct b_pelem * P )
 	       int i,nfields, fnum;
 	       tended struct b_list *lp = (struct b_list *)BlkLoc(E->parameter);
 	       ep = (struct b_lelem *)lp->listhead;
+printf("--\n");
 	       if (is:string(ep->lslots[0])) {
 	          cnv:C_string(ep->lslots[0],varname);
+printf("--%s\n", varname);
 		  if (getvar(varname,&ep->lslots[0])== Failed) {
 		     VariableLookupFailed(varname);
 		     }
 		  }
 	       }
 	    else {
+printf("==\n");
 	       if (is:string(E->parameter)){
 	          cnv:C_string(E->parameter, varname);
 		  DEBUGF(2, (stdout, "Looking up variable name =%s\n",
@@ -443,6 +463,7 @@ static struct b_pelem * ResolveReferences(struct b_pelem * P )
 		     }
 		  }
 	       }
+printf("done\n");
 	    break;
 	 }
 	 case PC_Pos_NF:
@@ -461,11 +482,14 @@ static struct b_pelem * ResolveReferences(struct b_pelem * P )
 	    tended struct b_list *lpsrc;
 	    tended struct b_list *lpdest;
 	    lpsrc = (struct b_list *)BlkD(E->parameter, List);
+printf("go resolve list\n");
 	    lpdest = ResolveList(lpsrc);
 	    E->parameter.dword = D_List;
 	    E->parameter.vword.bptr = (union block *) lpdest;
 	 }
+printf("not sure what this one is, end of pattern maybe?\n");
       }
+printf("finished switch\n");
       E =  Copy[P->index];
       free(Refs);
       free(Copy);
@@ -696,10 +720,15 @@ function {*} pattern_match(underef psub -> dpsub, pat)
 	 oldpos = k_pos;
 	 k_pos = stop;
 	 if (use_trap == 1){
+printf("tvsubs...start %d stop %d so therefore start+1 %d stop-start %d\n",
+	start, stop, start+1, stop-start); fflush(stdout);
 	    suspend tvsubs(&psub, start+1,stop - start);
+/*printf("and back from suspend tvsubs..\n"); fflush(stdout);*/
 	    }
 	 else{
+printf("regular string\n"); fflush(stdout);
 	    suspend string(stop - start, StrLoc(dpsub)+ start);
+/*printf("and back from suspend regular string..\n"); fflush(stdout);*/
 	    }
 	 deref(&psub,&dpsub);
 	 k_subject = dpsub;
@@ -820,7 +849,7 @@ struct b_pelem *Bracket (struct b_pelem *E,struct b_pelem * P,
 	 }
       default: {
 	 if (!cnv_cset(&arg, &arg))
-	    runerr(103,arg);
+	    runerr(104,arg);
 	 bp = pattern_make(0, &EOP, ptype ## _CS,1, arg);
 	 }
 	 }
@@ -915,7 +944,7 @@ function {1} Breakx(char_set)
 	 }
       default: {
 	 if (!cnv_cset(&char_set, &char_set))
-	    runerr(103,char_set);
+	    runerr(104,char_set);
 	 peBreakx = (struct b_pelem *)pelem_make(NULL,
 						 PC_Break_CS, 3,char_set);
 	 }
@@ -954,7 +983,7 @@ end
 	 }
       default: {
 	 if (!cnv_int(&arg, &arg))
-	    runerr(103,arg);
+	    runerr(102,arg);
 	 bp =  (union block *)pattern_make(0, &EOP, ptype ## _Nat,1, arg);
 	 }
 	 }
@@ -977,7 +1006,18 @@ function {1} Pos(position)
       }
    body {
       union block *bp;
-      ConvertPatternArgumentInt(position,bp,PC_Pos);
+      /*
+       * check if position is negative
+       */
+      if(position.vword.integr < 1) {
+         /* change position to a positive value and use RPos */
+         position.vword.integr = -position.vword.integr;
+         ConvertPatternArgumentInt(position,bp,PC_RPos);
+	 } 
+      else {
+         ConvertPatternArgumentInt(position,bp,PC_Pos);
+         }
+      /*ConvertPatternArgumentInt(position,bp,PC_Pos);*/
       return pattern(bp);
       }
 end
@@ -993,6 +1033,7 @@ function {1} Rpos(position)
       }
 end
 
+
 function {1} Tab(count)
    abstract {
       return pattern;
@@ -1006,7 +1047,7 @@ end
 
 function {1} Rtab(count)
    if !cnv:integer(count) then
-      runerr(103,count)
+      runerr(102,count)
    abstract {
       return pattern;
       }
@@ -1209,6 +1250,7 @@ function {1} pattern_fieldeval (var_list)
       }
    body {
       union block *bp;
+printf("pattern_fieldeval\n");
       bp = pattern_make(0, &EOP,PC_UNEVALFIELD,1, var_list);
       return pattern(bp);
       }
@@ -1223,6 +1265,7 @@ function {1} pattern_stringfunccall (var_list)
       }
    body {
       union block *bp;
+printf("pattern_stringfunccall\n");
       bp = pattern_make(0, &EOP,PC_String_VF,1, var_list);
       return pattern(bp);
       }
@@ -1236,6 +1279,7 @@ function {1} pattern_stringmethodcall (var_list)
       }
    body {
       union block *bp;
+printf("pattern_stringmethodcall\n");
       bp = pattern_make(0, &EOP,PC_String_MF,1, var_list);
       return pattern(bp);
       }
@@ -1249,6 +1293,10 @@ function {1} pattern_boolfunccall (var_list)
       }
    body {
       union block *bp;
+      tended char *temp;
+printf("pattern_boolfunccall\n");
+cnv:C_string(var_list, temp);
+printf("%s\n", temp);
       bp = pattern_make(0, &EOP,PC_Pred_Func,1, var_list);
       return pattern(bp);
       }
@@ -1262,6 +1310,7 @@ function {1} pattern_boolmethodcall (var_list)
       }
    body {
       union block *bp;
+printf("pattern_boolmethodcall\n");
       bp = pattern_make(0, &EOP,PC_Pred_MF,1, var_list);
       return pattern(bp);
       }
@@ -1276,7 +1325,9 @@ function {1} pattern_unevalvar (name)
       return pattern;
       }
    body {
-      union block *bp = pattern_make(3, &EOP,PC_Rpat,1, name);
+      union block *bp;
+printf("pattern_unevalvar\n");
+      bp = pattern_make(3, &EOP,PC_Rpat,1, name);
       return pattern(bp);
       }
 end
@@ -1806,7 +1857,7 @@ static void ErrorDuringPatternMatch(char *x)
    fatalerr(0, NULL);
    }
 
-dptr processFuncCallList(struct b_list *lp){
+dptr processFuncCallList(struct b_list *lp, int csr){
    int nargs;
    tended struct b_lelem *ep;
    struct descrip proc;
@@ -1814,14 +1865,19 @@ dptr processFuncCallList(struct b_list *lp){
    struct descrip procargs[10];
    tended struct descrip cresult;
    dptr call_result;
-   char *temp;
+   tended char *temp;
+k_pos = csr + 1;
    nargs = lp->size -1;
    ep = (struct b_lelem *)lp->listhead;
    proc = ep->lslots[0];
+cnv:C_string(proc, temp);
+printf("process: %s\n", temp);
    for (; BlkType(ep) == T_Lelem; ep = (struct b_lelem *)ep->listnext) {
       for (i = 1; i < ep->nused; i++) {
+cnv:C_string(ep->lslots[i], temp);
+printf("param: %s\n", temp);
 	 if(is:list(ep->lslots[i])) {
-	    dptr rv = processFuncCallList(BlkD(ep->lslots[i],List));
+	    dptr rv = processFuncCallList(BlkD(ep->lslots[i],List), csr);
 	    if (rv == 0) return 0;
 	    procargs[i - 1] = *rv;
 	    }
@@ -1843,8 +1899,8 @@ dptr processFuncCallList(struct b_list *lp){
 tended struct descrip cresult;
 dptr call_result;
 tended struct b_list *lp = (struct b_list *)BlkLoc(Node->parameter);
-call_result = processFuncCallList(lp);
-if (call_result == 0)
+call_result = processFuncCallList(lp, Cursor);
+if (call_result == 0) 
    goto Node_Fail;
 cresult = *call_result;
 #enddef
@@ -2077,6 +2133,7 @@ Node_Succeed:
  *       --    Stack_Ptr     current stack pointer
  */
 
+
     Node = (struct b_pelem *)Node->pthen;
 /*
  *       --  Come here to match the next pattern element
@@ -2100,6 +2157,8 @@ Node_Succeed:
  *       --    goto Match_Fail     if the entire match fails
  *       --    goto Fail           to signal failure of current match
  */
+
+printf("%ld\n", Node->pcode);
    switch(Node->pcode) {
    case PC_Alt: {
       DEBUGF(20,(stdout,"Setting up alternative \n"));
@@ -2513,8 +2572,9 @@ Node_Succeed:
    case  PC_Pred_Func: {
       GetResultFromFuncCall();
       if ( call_result == 0)
-	 goto Node_Fail;
+	 goto Node_Fail;  
       else {
+	 cnv:C_integer(cresult, k_pos);
 	 Cursor = k_pos - 1;
 	 goto Node_Succeed;
 	 }
@@ -2944,6 +3004,7 @@ Node_Succeed:
    case  PC_String : {
       int LV_Len = StrLen(Node->parameter);
       DEBUGF(20,(stdout,"Matching String \"%*s\" against %s, Length %d Cursor %d Len %d\n", LV_Len, StrLoc(Node->parameter), pat_sub+Cursor, Length, Cursor, LV_Len));
+printf("PC_String\n");
       if ((Length - Cursor >= LV_Len) &&
 	  !strncmp(pat_sub + Cursor, StrLoc(Node->parameter), LV_Len)) {
 	 Cursor = Cursor + LV_Len;
@@ -2958,6 +3019,7 @@ Node_Succeed:
       GetVarFromNodeParameter(Node);
       LV_Len = StrLen(var);
       DEBUGF(20,(stdout,"Matching String\n"));
+printf("PC_String_VP\n");
       if ((Length - Cursor >= LV_Len) &&
 	  !strncmp(pat_sub + Cursor, StrLoc(var), LV_Len)) {
 	 Cursor = Cursor + LV_Len;
@@ -2971,6 +3033,7 @@ Node_Succeed:
        */
    case  PC_String_VF: {
       GetResultFromFuncCall();
+printf("PC_String_VF\n");
       if (call_result == 0)
 	 goto Node_Fail;
       else {
@@ -2992,6 +3055,7 @@ Node_Succeed:
 
    case  PC_String_MF: {
       GetResultFromMethodCall();
+printf("PC_String_MF\n");
       if (call_result == 0)
 	 goto Node_Fail;
       else {

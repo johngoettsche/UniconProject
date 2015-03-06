@@ -104,7 +104,7 @@ function{0,1+} tab(i)
       C_integer j, t, oldpos;
       CURTSTATE();
 
-printf("TAB(%ld) CALLED!!!\n", i); fflush(stdout);
+/*printf("TAB(%ld) CALLED!!!\n", i); fflush(stdout);*/
       /*
        * Convert i to an absolute position.
        */

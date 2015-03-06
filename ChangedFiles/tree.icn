@@ -69,50 +69,66 @@ procedure yystalists(node)
    }
 end
 
+# try return image(s), see how to improve on that
+#procedure escapedoublequoted(s)
+   # work out how to reconstruct s with " escaped as \"
+#   return image(s)
+#end
+
 #added procedure
 procedure writes_code_for_uneval(L)
+local i
    writes(yyout, "[")
-   every temp := !L\ (*L -1) do {
+   writes("[")
+   every temp := L[i := 1 to *L] do {
       if type(temp) == "list" then {
 	 writes_code_for_uneval(temp)
-	 } else {
-	 writes(yyout, "\"", temp,"\",")
+	 } 
+      else {
+	 writes(yyout, image(temp))
+	 writes(image(temp))
+	 if i < *L then{
+	    writes(yyout, ",")
+	    writes(",")
+	    }
 	 }
       }
-   if type(L[*L]) == "list" then {
-      writes_code_for_uneval(L[*L])
-      }
-   else {
-      writes(yyout, "\"", L[*L], "\"")
-      }
    writes(yyout, "]")
+   writes("]")
    return
+end
+
+#added procedure
+procedure make_list_for_uneval(L, word)
+   if tab(upto(word)) then {
+      temp := tab(many(word))
+      if proc(temp) then {
+	 L1 := []
+	 put(L1, temp)
+	 L1 := make_list_for_uneval(L1, word)
+	 put(L, L1)
+	 }
+      else {
+	 put(L, temp)
+	 }
+      }
+   return L
 end
 
 #revised procedure
 procedure emit_code_for_uneval(funcname)
    L := []
-   tab(many("`"))
-   temp := tab(upto("(.")) 
+   tab(many('`'))
+   temp := tab(upto('(.')) 
    if \temp == "\\" then temp := "\\\\"
    put(L, \temp)
-   List := L
-   while tab(upto(&letters ++ &digits ++ '\'\"')) do {
-      temp := tab(many(&letters ++ &digits ++ '\'\"'))
-      if proc(temp) then {
-	 L1 := []
-	 put(L1, temp)
-	 put(List, L1)
-	 List := L1
-	 } 
-      else {
-	 put(List, temp)
-	 }
-      }
-   #L := List
+   word := &letters ++ &digits ++ '\'\"&'
+   L := make_list_for_uneval(L, word)
    writes(yyout, funcname, "(")
+   writes(funcname, "(")
    writes_code_for_uneval(L)
    writes(yyout, ")")
+   writes(")")
    return
 end
 
