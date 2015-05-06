@@ -1,5 +1,7 @@
 $include "ytab_h.icn"
 
+$define PatternImplementation 1
+
 #
 # treenode is a record for historical reasons. This module probably
 # still compiles with icont, which simplifies bootstrapping. If not,
@@ -69,13 +71,7 @@ procedure yystalists(node)
    }
 end
 
-# try return image(s), see how to improve on that
-#procedure escapedoublequoted(s)
-   # work out how to reconstruct s with " escaped as \"
-#   return image(s)
-#end
-
-#added procedure
+$ifdef PatternImplementation
 procedure writes_code_for_uneval(L)
 local i
    writes(yyout, "[")
@@ -131,27 +127,27 @@ procedure emit_code_for_uneval(funcname)
    writes(")")
    return
 end
-
-#old procedure
-#procedure emit_code_for_uneval(funcname)
-#   L := []
-#   tab(many("`"))
-#   temp := tab(upto("(.")) 
-#   if \temp == "\\" then temp := "\\\\"
-#   put(L,\temp)
-#   while tab(upto(&letters)) do {
-#      temp := tab(many(&letters))
-#      put(L,temp)
-#      }
-#   writes(yyout,funcname, "(")
-#   writes(yyout, "[")
-#   every temp := !L\ (*L -1) do {
-#      writes(yyout, "\"", temp,"\",")
-#      }
-#   writes(yyout, "\"", L[*L], "\"")
-#   writes(yyout, "])")
-#   return
-#end
+$else					#PatternImplementation
+procedure  emit_code_for_uneval(funcname)
+   L := []
+   tab(many("`"))
+   temp := tab(upto("(.")) 
+   if \temp == "\\" then temp := "\\\\"
+   put(L,\temp)
+   while tab(upto(&letters)) do {
+      temp := tab(many(&letters))
+      put(L,temp)
+      }
+   writes(yyout,funcname, "(")
+   writes(yyout, "[")
+   every temp := !L\ (*L -1) do {
+      writes(yyout, "\"", temp,"\",")
+      }
+   writes(yyout, "\"", L[*L], "\"")
+   writes(yyout, "])")
+   return
+end
+$endif					#PatternImplementation
 
 # the unevaluated expressions in pattern matching has the following major cases
 # 1. local/global variable ( indicated by absence of . and ( )
@@ -169,9 +165,11 @@ procedure process_uneval(node)
 	 if node.s[1:3] === "``" then {
 	    node.s ? {
 	       if find(".") & find ("(") then {
+		  write("\nFound method call")
 		  return emit_code_for_uneval("pattern_stringmethodcall")
 		  }
 	       else if find ("(") then {
+		  write("\nFound procedure call")
 		  return emit_code_for_uneval( "pattern_stringfunccall")
 		  }	
 	       else
@@ -181,15 +179,19 @@ procedure process_uneval(node)
 	 else {
 	    node.s ? {
 	       if find(".") & find ("(") then {
+		  write("\nFound method call")
 		  return emit_code_for_uneval("pattern_boolmethodcall")
 		  }
 	       else if find ("(") then {
+		  write("\nFound procedure call")
 		  return emit_code_for_uneval( "pattern_boolfunccall")
 		  }	
 	       else if find(".") then {
+		  write("\nFound field reference")
 		  return emit_code_for_uneval("pattern_unevalvar")
 		  }
 	       else {
+		  write("\nFound variable reference")
 		  tab(upto(&letters))
 		  temp := tab(many(&letters))
 		  writes(yyout,"pattern_unevalvar( ")
